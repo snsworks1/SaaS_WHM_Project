@@ -6,6 +6,7 @@ use App\Http\Controllers\PlansController;
 
 
 
+
 Route::get('/', function () {
     return redirect('/dashboard');
 });
@@ -25,9 +26,10 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/plans', [PlansController::class, 'index'])->name('plans.index');
     Route::post('/plans/select', [PlansController::class, 'select'])->name('plans.select');
+    Route::post('/plans/check-username', [PlansController::class, 'checkUsername'])->name('plans.checkUsername');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -36,7 +38,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     })->name('dashboard');
 
     Route::resource('plans', \App\Http\Controllers\Admin\PlanController::class);
-
-    // 회원 관리 라우트
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['create', 'store', 'destroy']);
+    Route::resource('servers', \App\Http\Controllers\Admin\ServerController::class);
+    Route::resource('whm-servers', \App\Http\Controllers\Admin\WhmServerController::class);
 });
+

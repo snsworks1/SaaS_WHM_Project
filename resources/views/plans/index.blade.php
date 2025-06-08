@@ -6,27 +6,46 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach ($plans as $plan)
-                    <div class="bg-white shadow-md rounded-lg p-6 text-center border border-gray-200 hover:shadow-lg transition duration-300">
-                        <h3 class="text-2xl font-bold mb-4">{{ $plan->name }}</h3>
-                        <p class="text-lg mb-2">가격: <span class="font-semibold">{{ number_format($plan->price) }}원</span></p>
-                        <p class="text-lg mb-4">디스크 용량: {{ $plan->disk_size }} GB</p>
+        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+            <form method="POST" action="{{ route('plans.select') }}" class="space-y-4">
+                @csrf
 
-                        <form method="POST" action="{{ route('plans.select') }}">
-                            @csrf
-                            <input type="hidden" name="plan_id" value="{{ $plan->id }}">
-                            <button type="submit" class="w-full py-3 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-600 transition duration-300">
-                                선택하기
-                            </button>
-                        </form>
-                    </div>
-                @endforeach
-            </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @foreach ($plans as $plan)
+                        <label class="p-4 border rounded cursor-pointer">
+                            <input type="radio" name="plan_id" value="{{ $plan->id }}" class="mr-2" required>
+                            {{ $plan->name }} - {{ number_format($plan->price) }}원 ({{ $plan->disk_size }}GB)
+                        </label>
+                    @endforeach
+                </div>
+
+                <div>
+                    <label>WHM ID (도메인으로 사용됩니다)</label>
+                    <input type="text" name="whm_username" class="w-full border rounded p-2" required>
+                </div>
+
+                <div>
+                    <label>WHM 비밀번호</label>
+                    <input type="password" name="whm_password" class="w-full border rounded p-2" required>
+                </div>
+
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">
+                    계정 생성
+                </button>
+            </form>
         </div>
     </div>
+
+    @if(session('success'))
+    <div class="p-4 bg-green-100 text-green-800 rounded mb-4">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if($errors->any())
+    <div class="p-4 bg-red-100 text-red-800 rounded mb-4">
+        {{ $errors->first() }}
+    </div>
+@endif
+
 </x-app-layout>
-
-
-
