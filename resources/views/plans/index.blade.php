@@ -1,31 +1,30 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('플랜 선택') }}
-        </h2>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">플랜 선택</h2>
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto">
             <form method="POST" action="{{ route('plans.select') }}" class="space-y-4">
                 @csrf
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     @foreach ($plans as $plan)
                         <label class="p-4 border rounded cursor-pointer">
-                            <input type="radio" name="plan_id" value="{{ $plan->id }}" class="mr-2" required>
+                            <input type="radio" name="plan_id" value="{{ $plan->id }}" required>
                             {{ $plan->name }} - {{ number_format($plan->price) }}원 ({{ $plan->disk_size }}GB)
                         </label>
                     @endforeach
                 </div>
 
                 <div>
-                    <label>WHM ID (도메인으로 사용됩니다)</label>
-                    <input type="text" name="whm_username" class="w-full border rounded p-2" required>
+                    <label>WHM 아이디 (도메인 앞부분)</label>
+                    <input type="text" name="whm_username" class="w-full border rounded p-2" required placeholder="영문 아이디 입력">
+                    <small>입력한 값 → {아이디}.cflow.dev 생성</small>
                 </div>
 
                 <div>
-                    <label>WHM 비밀번호</label>
+                    <label>비밀번호</label>
                     <input type="password" name="whm_password" class="w-full border rounded p-2" required>
                 </div>
 
@@ -35,17 +34,24 @@
             </form>
         </div>
     </div>
-
-    @if(session('success'))
-    <div class="p-4 bg-green-100 text-green-800 rounded mb-4">
-        {{ session('success') }}
-    </div>
-@endif
-
-@if($errors->any())
-    <div class="p-4 bg-red-100 text-red-800 rounded mb-4">
-        {{ $errors->first() }}
-    </div>
-@endif
-
 </x-app-layout>
+
+<script>
+    document.querySelector('input[name="whm_username"]').addEventListener('blur', function() {
+    let username = this.value;
+    fetch('/plans/check-username', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ whm_username: username })
+    }).then(res => res.json()).then(data => {
+        if (!data.available) {
+            alert('이미 사용중인 WHM ID입니다.');
+            this.value = '';
+        }
+    });
+});
+
+    </script>

@@ -22,15 +22,17 @@ class SaasProvisioningService
     $whmApi = new WhmApiService($server);
     $domain = "{$whmUsername}.cflow.dev";
 
+    // 패키지명: 플랜명 그대로 적용 (ex: Basic, Pro)
+    $package = $plan->name;
+
     $response = $whmApi->createAccount(
         $domain,
         $whmUsername,
         $plainPassword,
-        'default',
+        $package,   // ✅ 여기 적용됨
         $user->email
     );
 
-    // WHM API 결과 파싱
     $result = $response['result'][0] ?? null;
     if ($result && $result['status'] == 1) {
         $user->whm_server_id = $server->id;
