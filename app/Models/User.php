@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Service;
+
 
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -75,6 +77,9 @@ public function isAdmin()
 {
     return $this->is_admin;
 }
-
+public function services()
+{
+    return $this->hasMany(Service::class);
+}
 
 }

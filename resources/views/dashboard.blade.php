@@ -1,27 +1,22 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('대시보드') }}
-        </h2>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">내 서비스 목록</h2>
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                @if (auth()->user()->plan)
-                    <h3 class="text-xl font-bold mb-4">이용 중인 서비스</h3>
-
-                    <div class="bg-gray-100 p-4 rounded shadow">
-                        <p><strong>플랜명:</strong> {{ auth()->user()->plan->name }}</p>
-                        <p><strong>가격:</strong> {{ number_format(auth()->user()->plan->price) }}원</p>
-                        <p><strong>디스크 용량:</strong> {{ auth()->user()->plan->disk_size }} GB</p>
-                    </div>
-                @else
-                    <div class="text-center">
-                        <p>이용중인 서비스가 없습니다. <a href="{{ route('plans.index') }}" class="text-blue-500 underline">플랜 선택하기</a></p>
-                    </div>
-                @endif
-            </div>
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @forelse ($services as $service)
+                <div class="bg-white shadow rounded-2xl p-6 border">
+                    <h3 class="font-bold text-lg mb-2">{{ $service->plan->name }}</h3>
+                    <p class="text-gray-700 mb-1"><strong>도메인:</strong> {{ $service->whm_domain }}</p>
+                    <p class="text-gray-700 mb-1"><strong>WHM 계정:</strong> {{ $service->whm_username }}</p>
+                    <p class="text-gray-500 text-sm">생성: {{ $service->created_at->format('Y-m-d H:i') }}</p>
+                </div>
+            @empty
+                <div class="col-span-3 text-center text-gray-600">
+                    생성된 서비스가 없습니다.
+                </div>
+            @endforelse
         </div>
     </div>
 </x-app-layout>

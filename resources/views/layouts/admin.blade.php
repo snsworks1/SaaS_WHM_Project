@@ -21,7 +21,7 @@
             <a href="{{ route('admin.plans.index') }}" class="flex items-center px-4 py-2 text-gray-600 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 mb-2">
                 플랜 관리
             </a>
-            <a href="{{ route('admin.servers.index') }}" class="flex items-center px-4 py-2 text-gray-600 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 mb-2">
+            <a href="{{ route('admin.services.index') }}" class="flex items-center px-4 py-2 text-gray-600 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 mb-2">
                 서버 관리
             </a>
             <a href="{{ route('admin.whm-servers.index') }}" class="flex items-center px-4 py-2 text-gray-600 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700">

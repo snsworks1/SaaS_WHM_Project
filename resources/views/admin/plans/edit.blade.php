@@ -1,36 +1,80 @@
 @extends('layouts.admin')
 
-@section('title', '플랜 수정')
-
 @section('content')
-<h2 class="text-2xl font-bold mb-4">플랜 수정</h2>
+<div class="max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow-md">
+    <h2 class="text-2xl font-bold mb-6">플랜 수정</h2>
 
-<form method="POST" action="{{ route('admin.plans.update', $plan->id) }}" class="space-y-4">
-    @csrf
-    @method('PUT')
+    <form method="POST" action="{{ route('admin.plans.update', $plan->id) }}">
+        @csrf
+        @method('PUT')
 
-    <div>
-        <label class="block font-semibold">이름</label>
-        <input type="text" name="name" class="w-full border rounded p-2" value="{{ old('name', $plan->name) }}" required>
-    </div>
+        <!-- 플랜명 -->
+        <div class="mb-4">
+            <label class="block font-medium mb-1">플랜명 (WHM 패키지명)</label>
+            <input type="text" name="name" class="w-full border rounded p-2" value="{{ old('name', $plan->name) }}" required>
+        </div>
 
-    <div>
-        <label class="block font-semibold">가격 (원)</label>
-        <input type="number" name="price" class="w-full border rounded p-2" value="{{ old('price', $plan->price) }}" required>
-    </div>
+        <!-- 가격 -->
+        <div class="mb-4">
+            <label class="block font-medium mb-1">가격 (원)</label>
+            <input type="number" name="price" class="w-full border rounded p-2" value="{{ old('price', $plan->price) }}" required>
+        </div>
 
-    <div>
-        <label class="block font-semibold">디스크 크기 (GB)</label>
-        <input type="number" name="disk_size" class="w-full border rounded p-2" value="{{ old('disk_size', $plan->disk_size) }}" required>
-    </div>
+        <!-- 디스크 용량 -->
+        <div class="mb-4">
+            <label class="block font-medium mb-1">디스크 용량 (GB)</label>
+            <input type="number" name="disk_size" class="w-full border rounded p-2" value="{{ old('disk_size', $plan->disk_size) }}" required>
+        </div>
 
-    <div>
-        <label class="block font-semibold">설명</label>
-        <textarea name="description" class="w-full border rounded p-2">{{ old('description', $plan->description) }}</textarea>
-    </div>
+        <!-- 설명 -->
+        <div class="mb-4">
+            <label class="block font-medium mb-1">설명</label>
+            <textarea name="description" class="w-full border rounded p-2">{{ old('description', $plan->description) }}</textarea>
+        </div>
 
-    <div class="flex justify-end">
-        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700">수정</button>
-    </div>
-</form>
+        <hr class="my-6">
+
+        <h3 class="text-xl font-semibold mb-4">리소스 제한</h3>
+
+        <div class="grid grid-cols-2 gap-4">
+
+            <div>
+                <label class="block font-medium mb-1">FTP 계정 수</label>
+                <input type="number" name="ftp_accounts" class="w-full border rounded p-2" value="{{ old('ftp_accounts', $plan->ftp_accounts) }}" required>
+            </div>
+
+            <div>
+                <label class="block font-medium mb-1">이메일 계정 수</label>
+                <input type="number" name="email_accounts" class="w-full border rounded p-2" value="{{ old('email_accounts', $plan->email_accounts) }}" required>
+            </div>
+
+            <div>
+                <label class="block font-medium mb-1">DB 수</label>
+                <input type="number" name="sql_databases" class="w-full border rounded p-2" value="{{ old('sql_databases', $plan->sql_databases) }}" required>
+            </div>
+
+            <div>
+                <label class="block font-medium mb-1">메일링 리스트 수</label>
+                <input type="number" name="mailing_lists" class="w-full border rounded p-2" value="{{ old('mailing_lists', $plan->mailing_lists) }}" required>
+            </div>
+
+            <div>
+                <label class="block font-medium mb-1">시간당 이메일 발송 제한</label>
+                <input type="number" name="max_email_per_hour" class="w-full border rounded p-2" value="{{ old('max_email_per_hour', $plan->max_email_per_hour) }}" required>
+            </div>
+
+            <div>
+                <label class="block font-medium mb-1">이메일당 최대 용량 (MB)</label>
+                <input type="number" name="email_quota" class="w-full border rounded p-2" value="{{ old('email_quota', $plan->email_quota) }}" required>
+            </div>
+
+        </div>
+
+        <div class="mt-6">
+            <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
+                플랜 수정
+            </button>
+        </div>
+    </form>
+</div>
 @endsection

@@ -4,60 +4,46 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Server;
+use App\Models\WhmServer;   // ✅ 요거 추가
+use App\Models\Service;     // (서비스 관계 확인시 필요하면 추가)
 
 class ServerController extends Controller
 {
     public function index()
-    {
-        $servers = Server::all();
-        return view('admin.servers.index', compact('servers'));
+{
+    $servers = WhmServer::withCount('services')->get();
+
+    return view('admin.servers.index', compact('servers'));
+}
+
+   public function services()
+{
+    return $this->hasMany(Service::class, 'whm_server_id');
+}
+
+public function destroy($id)
+{
+    $server = WhmServer::findOrFail($id);
+
+    if ($server->services()->count() > 0) {
+        return redirect()->back()->with('error', '이 서버에 연결된 서비스가 있어 삭제할 수 없습니다.');
     }
 
-    public function create()
-    {
-        return view('admin.servers.create');
-    }
+    $server->delete();
+    return redirect()->route('admin.servers.index')->with('success', '서버가 정상적으로 삭제되었습니다.');
+}
+public function extend($id)
+{
+    $service = Service::findOrFail($id);
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'ip_address' => 'required|ip',
-            'whm_user' => 'required|string',
-            'whm_token' => 'required|string',
-            'status' => 'required|in:active,inactive',
-        ]);
+    // 기본 1개월 연장 (필요시 months 파라미터로 변경 가능)
+    $service->expired_at = \Carbon\Carbon::parse($service->expired_at)->addMonth();
 
-        Server::create($validated);
+    // status 복구는 여기서는 제외 (결제엔진 연동시 처리할 예정)
+    $service->save();
 
-        return redirect()->route('admin.servers.index')->with('success', '서버가 등록되었습니다.');
-    }
+    return redirect()->route('admin.services.index')->with('success', '서비스가 1개월 연장되었습니다.');
+}
 
-    public function edit(Server $server)
-    {
-        return view('admin.servers.edit', compact('server'));
-    }
 
-    public function update(Request $request, Server $server)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'ip_address' => 'required|ip',
-            'whm_user' => 'required|string',
-            'whm_token' => 'required|string',
-            'status' => 'required|in:active,inactive',
-        ]);
-
-        $server->update($validated);
-
-        return redirect()->route('admin.servers.index')->with('success', '서버가 수정되었습니다.');
-    }
-
-    public function destroy(Server $server)
-    {
-        $server->delete();
-
-        return redirect()->route('admin.servers.index')->with('success', '서버가 삭제되었습니다.');
-    }
 }

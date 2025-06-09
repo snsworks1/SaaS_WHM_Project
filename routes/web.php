@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PlansController;
+use App\Http\Controllers\Admin\ServiceController;
+
 
 
 
@@ -10,6 +12,12 @@ use App\Http\Controllers\PlansController;
 Route::get('/', function () {
     return redirect('/dashboard');
 });
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth'])
+    ->name('dashboard');
+
+
 
 Route::middleware([
     'auth:sanctum',
@@ -39,7 +47,18 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::resource('plans', \App\Http\Controllers\Admin\PlanController::class);
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['create', 'store', 'destroy']);
-    Route::resource('servers', \App\Http\Controllers\Admin\ServerController::class);
+    Route::resource('service', \App\Http\Controllers\Admin\ServiceController::class);
     Route::resource('whm-servers', \App\Http\Controllers\Admin\WhmServerController::class);
 });
 
+Route::post('/check-whm-username', [\App\Http\Controllers\Api\ProvisioningController::class, 'checkWhmUsername'])->name('check-whm-username');
+
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+    
+    Route::get('/services', [ServiceController::class, 'index'])->name('admin.services.index');
+    Route::post('/services/{id}/extend', [ServiceController::class, 'extend'])->name('admin.services.extend');
+    Route::get('/services/{id}/edit', [ServiceController::class, 'edit'])->name('admin.services.edit');
+    Route::post('/services/{id}/update', [ServiceController::class, 'update'])->name('admin.services.update');
+    Route::delete('/services/{id}', [ServiceController::class, 'destroy'])->name('admin.services.destroy');
+    
+});

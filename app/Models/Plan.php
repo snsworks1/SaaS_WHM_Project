@@ -20,4 +20,10 @@ class Plan extends Model
         'description',  // 만약 설명 컬럼이 있으면
         // 다른 컬럼 추가 가능
     ];
+
+    public function services()
+{
+    return $this->hasMany(Service::class);
+}
+
 }

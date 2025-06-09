@@ -1,3 +1,165 @@
+✅ WHM SaaS 프로젝트 현재까지 완성 설계도 (2025-06-09 기준)
+🏗 전체 시스템 흐름도
+arduino
+복사
+편집
+회원가입 → 플랜 선택 → 서비스 생성 (WHM 계정 자동생성)
+→ SaaS 대시보드 → 서비스 관리 (만료, 연장, 자동정지, 삭제)
+→ 관리자 패널 → 회원관리 / 서버관리 / 서비스모니터링
+→ 자동 WHM 제어 (suspend / unsuspend / delete)
+→ 매일 cron 스케줄러를 통한 자동정지엔진
+📂 디렉토리 및 주요 소스 구조
+pgsql
+복사
+편집
+app/
+ ├── Console/
+ │    └── Commands/
+ │         └── SaaSServiceMonitor.php (자동정지엔진)
+ ├── Http/
+ │    ├── Controllers/
+ │    │     ├── PlansController.php (플랜 선택/서비스 생성)
+ │    │     ├── Admin/
+ │    │     │     ├── ServerController.php (WHM 서버 관리)
+ │    │     │     └── ServiceController.php (서비스 관리, 연장/수정/삭제)
+ │    ├── Middleware/
+ │    │     └── AdminMiddleware.php (관리자 인증)
+ ├── Models/
+ │    ├── User.php
+ │    ├── Plan.php
+ │    ├── Service.php
+ │    └── WhmServer.php
+ └── Services/
+      └── SaasProvisioningService.php (WHM 계정 생성 엔진)
+      └── WhmApiService.php (WHM API 통신 모듈)
+resources/views/
+ ├── plans/index.blade.php (플랜 선택)
+ └── admin/
+      ├── servers/ (서버 관리 뷰)
+      ├── services/ (서비스 모니터링 뷰)
+      │    └── index.blade.php
+routes/
+ └── web.php (전체 라우팅)
+public/
+ └── css/
+      └── admin-table.css (관리자 전용 CSS 독립 적용)
+🔐 주요 라우트 (routes/web.php)
+php
+복사
+편집
+// 일반 유저용
+Route::get('/plans', [PlansController::class, 'index'])->name('plans');
+Route::post('/plans/select', [PlansController::class, 'select'])->name('plans.select');
+
+// 관리자 전용 그룹
+Route::middleware(['admin'])->group(function () {
+    
+    // WHM 서버 관리
+    Route::resource('/admin/servers', ServerController::class)->names('admin.servers');
+    
+    // 서비스 관리
+    Route::get('/admin/services', [ServiceController::class, 'index'])->name('admin.services.index');
+    Route::get('/admin/services/{id}/edit', [ServiceController::class, 'edit'])->name('admin.services.edit');
+    Route::post('/admin/services/{id}/update', [ServiceController::class, 'update'])->name('admin.services.update');
+    Route::post('/admin/services/{id}/extend', [ServiceController::class, 'extend'])->name('admin.services.extend');
+    Route::delete('/admin/services/{id}', [ServiceController::class, 'destroy'])->name('admin.services.destroy');
+});
+📊 DB 테이블 구조
+1️⃣ users 테이블 (Jetstream 기본)
+컬럼명	타입	설명
+id	BIGINT	PK
+name	VARCHAR	사용자명
+email	VARCHAR	이메일
+password	VARCHAR	패스워드
+phone	VARCHAR	추가된 전화번호
+
+2️⃣ plans 테이블 (플랜 관리)
+컬럼명	타입	설명
+id	BIGINT	PK
+name	VARCHAR	플랜명
+price	INTEGER	가격
+disk_size	INTEGER	디스크 용량 (GB)
+whm_package	VARCHAR	WHM 패키지명
+
+3️⃣ whm_servers 테이블 (서버풀 관리)
+컬럼명	타입	설명
+id	BIGINT	PK
+name	VARCHAR	서버명
+ip_address	VARCHAR	WHM IP
+whm_user	VARCHAR	WHM 접근 유저명
+whm_token	TEXT	WHM API 토큰
+status	ENUM	활성/비활성
+
+4️⃣ services 테이블 (서비스 인스턴스)
+컬럼명	타입	설명
+id	BIGINT	PK
+user_id	FK → users	
+plan_id	FK → plans	
+whm_username	VARCHAR	WHM 유저명
+whm_domain	VARCHAR	도메인 (서브도메인 기반)
+whm_server_id	FK → whm_servers	
+expired_at	DATETIME	만료일
+status	ENUM	active / suspended / deleted
+created_at	DATETIME	
+updated_at	DATETIME	
+
+🧠 SaaS 핵심 로직 흐름
+1️⃣ 가입 → 플랜 선택 → 계정생성
+SaaSProvisioningService 가 WHM API 통해 자동 계정 생성
+
+WHM 계정 생성 성공시 services 레코드 생성
+
+expired_at은 최초 1개월 설정됨
+
+2️⃣ 자동정지엔진 (SaaSServiceMonitor.php)
+매일 스케줄러 (Laravel schedule:run) 에 의해 실행
+
+만료일이 지나면:
+
+D+2 : WHM suspendAcct
+
+D+3 : WHM deleteAcct
+
+3️⃣ 관리자가 수동 연장
+admin.services.extend 라우트 통해
+
+expired_at 1개월 연장
+
+만약 suspend 상태면 unsuspendAcct 호출
+
+4️⃣ 수동 삭제 (관리자 삭제)
+DB 삭제
+
+WHM deleteAcct 호출
+
+사용 디스크 용량 감소 처리 포함
+
+🧪 테이블 관계도 (ERD)
+text
+복사
+편집
+User (1) ---- (N) Service (N) ---- (1) Plan
+                      |
+                      |
+                  (1) WhmServer
+🖥 관리자 UI 상태
+✅ 전체 서비스 모니터링
+
+✅ 연장 / 수정 / 삭제 기능
+
+✅ 상태별 컬러뱃지 완벽 분리 (충돌없는 css)
+
+🔧 추가 메모리에 저장된 규칙
+✅ 모든 Admin View는 @extends('layouts.admin')로 통일
+
+✅ 모든 Admin Table은 admin-table.css 독립 스타일 유지
+
+이제부터 연장 결제 PG 연동 / 신규 고객 대시보드 기능 / SaaS 정산엔진 등도 이 구조 그대로 쉽게 확장 가능.
+
+
+
+
+
 1️⃣ Laravel SaaS 기본 뼈대 완성
 이건 SaaS 전체 시스템의 중심입니다.
 
