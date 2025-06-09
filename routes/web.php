@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PlansController;
 use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\UserServiceController;
 
 
 
@@ -48,7 +49,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('plans', \App\Http\Controllers\Admin\PlanController::class);
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['create', 'store', 'destroy']);
     Route::resource('service', \App\Http\Controllers\Admin\ServiceController::class);
+    
     Route::resource('whm-servers', \App\Http\Controllers\Admin\WhmServerController::class);
+
 });
 
 Route::post('/check-whm-username', [\App\Http\Controllers\Api\ProvisioningController::class, 'checkWhmUsername'])->name('check-whm-username');
@@ -62,3 +65,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::delete('/services/{id}', [ServiceController::class, 'destroy'])->name('admin.services.destroy');
     
 });
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/services/{id}/change-plan', [UserServiceController::class, 'showChangePlan'])->name('services.changePlan');
+    Route::post('/services/{id}/confirm-upgrade', [UserServiceController::class, 'confirmUpgrade'])->name('services.confirmUpgrade');
+    Route::post('/services/{id}/process-upgrade', [UserServiceController::class, 'processUpgrade'])->name('services.processUpgrade');
+});
+
+Route::get('/services/{id}/upgrade-complete', [UserServiceController::class, 'upgradeComplete'])->name('services.upgradeComplete');

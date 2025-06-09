@@ -49,6 +49,14 @@ class ServiceController extends Controller
         }
     }
 
+        // ✅ 사용량 차감 로직
+        $plan = $service->plan;
+        $whmServer->used_disk_capacity -= $plan->disk_size;
+        if ($whmServer->used_disk_capacity < 0) {
+            $whmServer->used_disk_capacity = 0; // 음수 방지
+        }
+        $whmServer->save();
+
     $service->delete();
 
     return redirect()->route('admin.services.index')->with('success', '서비스가 삭제되었습니다.');

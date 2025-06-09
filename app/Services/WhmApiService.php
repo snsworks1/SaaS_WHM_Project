@@ -139,6 +139,12 @@ public function deleteAccount($username)
     ]);
 }
 
-
+public function changePackage($username, $newPackage)
+{
+    return $this->request('changepackage', [
+        'user' => $username,
+        'pkg' => $newPackage
+    ]);
+}
 
 }
