@@ -5,33 +5,33 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\WhmServer;
 use Illuminate\Http\Request;
-use App\Services\WhmApiService; // 서비스 불러오기
+use App\Services\WhmApiService;
 
 class WhmServerController extends Controller
 {
-public function index()
-{
-    $servers = WhmServer::all();
+    public function index()
+    {
+        $servers = WhmServer::all();
 
-    $servers = $servers->map(function ($server) {
-        $service = new \App\Services\WhmApiService($server);
-        $server->connection_status = $service->checkConnection() ? 'connected' : 'disconnected';
+        $servers = $servers->map(function ($server) {
+            $service = new WhmApiService($server);
+            $server->connection_status = $service->checkConnection() ? 'connected' : 'disconnected';
 
-        if ($server->connection_status === 'connected') {
-            $server->account_count = $service->getAccountCount();
-            $server->server_load = $service->getServerLoad();
-            $server->disk_usage = $service->getDiskUsage();
-        } else {
-            $server->account_count = '-';
-            $server->server_load = '-';
-            $server->disk_usage = '-';
-        }
+            if ($server->connection_status === 'connected') {
+                $server->account_count = $service->getAccountCount();
+                $server->server_load = $service->getServerLoad();
+                $server->disk_usage = $service->getDiskUsage();
+            } else {
+                $server->account_count = '-';
+                $server->server_load = '-';
+                $server->disk_usage = '-';
+            }
 
-        return $server;
-    });
+            return $server;
+        });
 
-    return view('admin.whm_servers.index', compact('servers'));
-}
+        return view('admin.whm_servers.index', compact('servers'));
+    }
 
     public function create()
     {
@@ -42,12 +42,21 @@ public function index()
     {
         $request->validate([
             'name' => 'required',
+            'ip_address' => 'required|ip',  // ✅ IP 주소 추가
             'api_url' => 'required',
             'api_token' => 'required',
             'username' => 'required',
         ]);
 
-        WhmServer::create($request->all());
+        WhmServer::create([
+            'name' => $request->name,
+            'ip_address' => $request->ip_address,  // ✅ 저장 추가
+            'api_url' => $request->api_url,
+            'api_token' => $request->api_token,
+            'username' => $request->username,
+            'status' => 'active',
+        ]);
+
         return redirect()->route('admin.whm-servers.index')->with('success', 'WHM 서버 추가됨.');
     }
 
@@ -60,12 +69,20 @@ public function index()
     {
         $request->validate([
             'name' => 'required',
+            'ip_address' => 'required|ip',  // ✅ 수정시에도 필수
             'api_url' => 'required',
             'api_token' => 'required',
             'username' => 'required',
         ]);
 
-        $whmServer->update($request->all());
+        $whmServer->update([
+            'name' => $request->name,
+            'ip_address' => $request->ip_address,  // ✅ 저장 추가
+            'api_url' => $request->api_url,
+            'api_token' => $request->api_token,
+            'username' => $request->username,
+        ]);
+
         return redirect()->route('admin.whm-servers.index')->with('success', '수정 완료.');
     }
 
@@ -75,15 +92,14 @@ public function index()
         return redirect()->route('admin.whm-servers.index')->with('success', '삭제 완료.');
     }
 
-
     public function monitor($id)
-{
-    $server = WhmServer::findOrFail($id);
-    $service = new WhmApiService($server);
+    {
+        $server = WhmServer::findOrFail($id);
+        $service = new WhmApiService($server);
 
-    $accountCount = $service->getAccountCount();
-    $serverLoad = $service->getServerLoad();
+        $accountCount = $service->getAccountCount();
+        $serverLoad = $service->getServerLoad();
 
-    return view('admin.whm_servers.monitor', compact('server', 'accountCount', 'serverLoad'));
-}
+        return view('admin.whm_servers.monitor', compact('server', 'accountCount', 'serverLoad'));
+    }
 }

@@ -14,7 +14,8 @@
     @foreach ($servers as $server)
         <div class="bg-white shadow rounded-lg p-6 border border-gray-200 hover:shadow-lg transition duration-300">
             <h3 class="text-xl font-bold mb-2">{{ $server->name }}</h3>
-            <p class="text-sm text-gray-500 mb-4">{{ $server->api_url }}</p>
+            <p class="text-sm text-gray-500 mb-2">API URL: {{ $server->api_url }}</p>
+            <p class="text-sm text-gray-500 mb-4">서버 IP: <span class="font-semibold">{{ $server->ip_address ?? '-' }}</span></p>
 
             <div class="mb-3">
                 <span class="font-semibold">상태: </span>

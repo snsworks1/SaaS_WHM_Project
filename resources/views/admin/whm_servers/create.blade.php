@@ -27,6 +27,10 @@
             <label class="form-label">WHM Username</label>
             <input type="text" name="username" class="form-control" required>
         </div>
+        <div class="mb-4">
+    <label class="block text-sm font-medium text-gray-700">서버 IP</label>
+    <input type="text" name="ip_address" class="mt-1 block w-full" required>
+</div>
 
         <div class="mb-4">
     <label class="block font-medium mb-1">전체 디스크 용량 (GB)</label>

@@ -10,6 +10,8 @@ use App\Models\Plan;
 use App\Models\WhmServer;
 use Carbon\Carbon;
 use App\Services\WhmApiService;
+use App\Services\CloudflareService; // ✅ 추가
+
 
 
 
@@ -29,16 +31,29 @@ class ServiceController extends Controller
     }
     
     public function destroy($id)
-    {
-        $server = WhmServer::findOrFail($id);
-    
-        if ($server->services()->count() > 0) {
-            return redirect()->back()->with('error', '이 서버에 연결된 서비스가 있어 삭제할 수 없습니다.');
+{
+    $service = Service::findOrFail($id);
+
+    // WHM 삭제
+    $whmServer = $service->whmServer;
+    $whmApi = new WhmApiService($whmServer);
+    $whmApi->deleteAccount($service->whm_username);
+
+    // ✅ 이 부분에서 CloudflareService 호출
+    if ($service->dns_record_id) {
+        try {
+            $cloudflare = new CloudflareService();
+            $cloudflare->deleteDnsRecord($service->dns_record_id);
+        } catch (\Exception $e) {
+            \Log::error('Cloudflare DNS 삭제 실패', ['error' => $e->getMessage()]);
         }
-    
-        $server->delete();
-        return redirect()->route('admin.servers.index')->with('success', '서버가 정상적으로 삭제되었습니다.');
     }
+
+    $service->delete();
+
+    return redirect()->route('admin.services.index')->with('success', '서비스가 삭제되었습니다.');
+}
+
 
     public function extend($id)
 {

@@ -30,6 +30,11 @@
         </div>
 
         <div class="mb-4">
+    <label class="block text-sm font-medium text-gray-700">서버 IP</label>
+    <input type="text" name="ip_address" class="mt-1 block w-full" value="{{ $server->ip_address }}" required>
+</div>
+
+        <div class="mb-4">
     <label class="block font-medium mb-1">전체 디스크 용량 (GB)</label>
     <input type="number" name="total_disk_capacity" value="{{ old('total_disk_capacity', $whmServer->total_disk_capacity ?? '') }}" class="form-input w-full" required>
 </div>

@@ -12,10 +12,10 @@ class Service extends Model
         'whm_username',
         'whm_domain',
         'whm_server_id',
-        'started_at',
-        'expired_at'
+        'expired_at',
+        'status',
+        'dns_record_id' // ✅ 이거 추가!!!
     ];
-
     protected $dates = [
         'started_at',
         'expired_at'
