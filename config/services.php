@@ -34,5 +34,10 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'toss' => [
+    'client_key' => env('TOSS_CLIENT_KEY'),
+    'secret_key' => env('TOSS_SECRET_KEY'),
+    'webhook_secret' => env('TOSS_WEBHOOK_SECRET'),
+],
 
 ];

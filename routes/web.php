@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PlansController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\UserServiceController;
+use App\Http\Controllers\PaymentController;
 
 
 
@@ -74,3 +75,11 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::get('/services/{id}/upgrade-complete', [UserServiceController::class, 'upgradeComplete'])->name('services.upgradeComplete');
+
+
+Route::get('/checkout/confirm', [\App\Http\Controllers\PaymentController::class, 'confirmGet']);
+
+Route::get('/checkout/confirm', [PaymentController::class, 'confirmGet']);
+Route::get('/checkout/fail', function () {
+    return view('checkout.fail');
+});
