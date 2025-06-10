@@ -12,13 +12,14 @@ use App\Http\Controllers\PaymentController;
 
 
 Route::get('/', function () {
-    return redirect('/dashboard');
+    return view('welcome');
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth'])
     ->name('dashboard');
 
+    
 
 
 Route::middleware([
