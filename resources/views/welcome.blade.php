@@ -2,9 +2,12 @@
 <!DOCTYPE html>
 <html lang="ko" class="dark">
 <head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
           <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/IconOnly_Transparent_NoBuffer.png') }}">
+          
 
   <title>Cflow SaaS 기반 웹호스팅</title>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -17,6 +20,7 @@
     body { font-family: 'Noto Sans KR', sans-serif; }
     .slider img { transition: opacity 1s ease-in-out; }
   </style>
+
 </head>
 <body class="bg-zinc-900 text-white">
 
@@ -172,35 +176,47 @@ setInterval(() => {
 
 <!-- Plans -->
 <section id="plans" class="py-20 px-6 bg-zinc-950">
-    <div class="max-w-7xl mx-auto space-y-16">
-  <h2 class="text-2xl font-bold mb-10 text-center">요금제 플랜</h2>
-  <div class="grid md:grid-cols-2 gap-6">
-    <div class="bg-white text-black p-6 rounded-xl shadow-lg">
-      <h3 class="text-xl font-bold mb-2">Basic 플랜</h3>
-      <p class="text-sm mb-4">₩39,000 / 월</p>
-      <ul class="text-sm space-y-1">
-        <li>✔ 5GB SSD 저장공간</li>
-        <li>✔ 무제한 트래픽</li>
-        <li>✔ WordPress 자동설치</li>
-        <li>✔ 템플릿 기본 제공</li>
-        <li>✔ 보안 및 캐시 최적화 포함</li>
-      </ul>
-    </div>
-    <div class="bg-white text-black p-6 rounded-xl shadow-lg">
-      <h3 class="text-xl font-bold mb-2">Pro 플랜</h3>
-      <p class="text-sm mb-4">₩59,000 / 월</p>
-      <ul class="text-sm space-y-1">
-        <li>✔ 10GB SSD 저장공간</li>
-        <li>✔ 무제한 트래픽</li>
-        <li>✔ 프리미엄 템플릿 전체 제공</li>
-        <li>✔ 강화된 보안 및 캐시</li>
-        <li>✔ 다중 페이지 관리 기능</li>
-      </ul>
-    </div>
-  </div>
-</div>
-</section>
+  <div class="max-w-7xl mx-auto text-center">
+    <h2 class="text-3xl font-bold mb-10">요금제 플랜</h2>
 
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto ">
+      <!-- Basic 플랜 -->
+      <div class="bg-white text-black p-6 rounded-xl shadow-md border border-gray-200 hover:shadow-xl hover:scale-[1.01] transition-all duration-300">
+        <h3 class="text-xl font-bold mb-2">basic 플랜</h3>
+        <p class="text-blue-600 font-semibold mb-4">₩39,000 / 월</p>
+        <ul class="space-y-3 text-sm">
+          <li class="flex items-center gap-2"><i class="fas fa-hdd text-blue-600"></i> 5GB SSD 저장공간</li>
+          <li class="flex items-center gap-2"><i class="fas fa-infinity text-blue-600"></i> 무제한 트래픽</li>
+          <li class="flex items-center gap-2"><i class="fab fa-wordpress text-blue-600"></i> WordPress 자동설치</li>
+          <li class="flex items-center gap-2"><i class="fas fa-palette text-blue-600"></i> 템플릿 기본 제공</li>
+          <li class="flex items-center gap-2"><i class="fas fa-shield-alt text-blue-600"></i> 보안 및 캐시 최적화 포함</li>
+          <li class="flex items-center gap-2"><i class="fas fa-shield-halved text-blue-600"></i> DDoS 고급 보호</li>
+        </ul>
+      </div>
+
+      <!-- Pro 플랜 -->
+      <div class="bg-white text-black p-6 rounded-xl shadow-md border border-gray-200 hover:shadow-xl hover:scale-[1.01] transition-all duration-300">
+        <h3 class="text-xl font-bold mb-2">pro 플랜</h3>
+        <p class="text-purple-600 font-semibold mb-4">₩59,000 / 월</p>
+        <ul class="space-y-3 text-sm">
+          <li class="flex items-center gap-2"><i class="fas fa-hdd text-purple-600"></i> 10GB SSD 저장공간</li>
+          <li class="flex items-center gap-2"><i class="fas fa-infinity text-purple-600"></i> 무제한 트래픽</li>
+          <li class="flex items-center gap-2"><i class="fas fa-star text-purple-600"></i> 프리미엄 템플릿 전체 제공</li>
+          <li class="flex items-center gap-2"><i class="fas fa-shield-alt text-purple-600"></i> 강화된 보안 및 캐시</li>
+          <li class="flex items-center gap-2"><i class="fas fa-shield-halved text-purple-600"></i> DDoS 고급 보호</li>
+          <li class="flex items-center gap-2"><i class="fas fa-rocket text-purple-600"></i> 고속 캐시 및 성능 최적화</li>
+          <li class="flex items-center gap-2"><i class="fas fa-cloud-upload-alt text-purple-600"></i> 주 1회 자동 백업</li>
+          <li class="flex items-center gap-2"><i class="fas fa-wrench text-purple-600"></i> SFTP 지원</li>
+          <li class="flex items-center gap-2"><i class="fas fa-robot text-purple-600"></i> AI 이상 트래픽 탐지</li>
+        </ul>
+      </div>
+      
+    </div>
+    <div class="mt-6">
+  <a href="/login" class="inline-block px-2 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">플랜 선택하기</a>
+</div>
+  </div>
+</section>
 
 <!-- FAQ Section -->
  
@@ -289,7 +305,55 @@ setInterval(() => {
 <!-- Footer -->
 <footer class="bg-zinc-950 py-10 text-center text-sm text-zinc-400">
   ⓒ 2018 S&S Works. All rights reserved.
+      · <button onclick="document.getElementById('refundModal').showModal()" class="underline text-blue-400 hover:text-blue-600">환불 정책</button>
+          · <a href="/terms" class="underline hover:text-white">이용약관</a> ·
+    <a href="/policy" class="underline hover:text-white">개인정보 처리방침</a> 
+    <div class="max-w-6xl mx-auto px-4 text-center space-y-2">
+        <p>
+            <span class="inline-block">상호명: 에스앤에스웍스</span> |
+            <span class="inline-block">서비스명: CFlow</span> |
+            <span class="inline-block">대표자: 김대현</span> |
+            <span class="inline-block">사업자등록번호: 522-71-00290</span> |
+            <span class="inline-block">통신판매업: 2018-경기포천-0387</span>
+
+       
+        </p>
+        <p>
+            <span class="inline-block">사업장 주소: 경기도 의정부시 평화로 483번길 23, 202호</span> |
+            <span class="inline-block">고객센터: 010-5914-3150</span>
+        </p>
+    </div>
+
 </footer>
+
+<dialog id="refundModal" class="rounded-xl max-w-xl w-full shadow-lg backdrop:bg-black/50">
+    <div class="p-6">
+        <h2 class="text-lg font-bold mb-4">환불 정책 안내</h2>
+        <p class="text-sm text-gray-700 leading-relaxed space-y-2">
+            결제일 기준 <strong>14일 이내</strong>에는 사용일수만큼 일할 계산되어 <strong>남은 기간에 대해 환불</strong>이 가능합니다.<br><br>
+
+            <strong>서비스 결제를 체결한 사용자는 아래와 같이 결제에 대한 환불을 요구할 수 있습니다.</strong><br>
+            - 회사의 귀책 사유료 인한 결제 오류가 발생된 경우<br>
+            - 회사의 귀책 사유로 인한 서비스가 중단된 경우<br>
+            - 단순 변심으로 인한 환불<br>
+            <strong>단, 다음의 경우는 환불이 제한됩니다:</strong><br>
+            - 14일 이후: 환불 불가 (월 단위 정산)<br>
+            - 할인 결제 시: 위약금 발생 가능 (할인 금액 ÷ 총 개월수 × 잔여 개월수)<br>
+
+            본 환불 정책은 전자상거래법 및 소비자보호법을 준수합니다.
+        </p>
+        <div class="mt-6 text-end">
+            <button onclick="document.getElementById('refundModal').close()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                닫기
+            </button>
+        </div>
+    </div>
+    
+</dialog>
+
+
+
+
 
 <script>
   document.querySelectorAll('.faq-toggle').forEach(button => {
@@ -313,5 +377,7 @@ setInterval(() => {
 
   gtag('config', 'G-F476SE7JC5');
 </script>
+
+
 </body>
 </html>
