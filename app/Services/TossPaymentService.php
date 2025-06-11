@@ -26,4 +26,22 @@ class TossPaymentService
                 'cancelReason' => $reason,
             ])->json();
     }
+
+        public function getReceiptByOrderId(string $orderId): ?array
+{
+    $response = Http::withBasicAuth(config('services.toss.secret_key'), '')
+        ->get("https://api.tosspayments.com/v1/payments/orders/{$orderId}");
+
+    \Log::info('Toss API Response', [
+        'orderId' => $orderId,
+        'status' => $response->status(),
+        'body' => $response->body(),
+    ]);
+
+    if ($response->successful()) {
+        return $response->json();
+    }
+
+    return null;
+}
 }

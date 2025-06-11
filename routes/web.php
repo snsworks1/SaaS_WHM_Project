@@ -84,3 +84,7 @@ Route::get('/checkout/confirm', [PaymentController::class, 'confirmGet']);
 Route::get('/checkout/fail', function () {
     return view('checkout.fail');
 });
+
+Route::middleware(['auth'])->group(function () { #대시보드->결제내역
+    Route::get('/dashboard/payments', [\App\Http\Controllers\Dashboard\PaymentController::class, 'index'])->name('dashboard.payments');
+});

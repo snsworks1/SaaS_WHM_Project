@@ -18,6 +18,10 @@
                     <x-nav-link href="{{ route('plans.index') }}" :active="request()->routeIs('plans.index')">
     {{ __('웹 구매') }}
 </x-nav-link>
+<x-nav-link href="{{route('dashboard.payments')}}" :active="request()->routeIs('dashboard.payments')">
+    {{ __('결제 내역') }}
+</x-nav-link>
+
                 </div>
             </div>
 
