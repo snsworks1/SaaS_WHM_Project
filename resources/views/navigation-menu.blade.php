@@ -6,7 +6,7 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-    <img src="{{ asset('images/logo.png') }}" alt="Cflow Logo" class="w-48 h-auto mx-auto">
+    <img src="{{ asset('images/logo.png') }}" alt="hostyle Logo" class="w-48 h-auto mx-auto">
                     </a>
                 </div>
 

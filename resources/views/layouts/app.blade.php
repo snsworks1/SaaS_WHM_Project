@@ -6,10 +6,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'CFlow 웹호스팅') }}</title>
+        <title>{{ config('app.name', 'Hostyle 웹호스팅') }}</title>
 
         <!-- 파비콘 -->
-<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/IconOnly_Transparent_NoBuffer.png') }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/IconOnly_Transparent.png') }}">
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -46,13 +46,14 @@
         @livewireScripts
 
         <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-F476SE7JC5"></script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Y7BBE8FQ2H"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', 'G-F476SE7JC5');
+  gtag('config', 'G-Y7BBE8FQ2H');
 </script>
     </body>
 </html>

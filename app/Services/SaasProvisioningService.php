@@ -34,7 +34,7 @@ class SaasProvisioningService
         ]);
 
         $whmApi = new WhmApiService($server);
-        $domain = "{$whmUsername}.cflow.dev";
+        $domain = "{$whmUsername}.hostyle.me";
 
         Log::info('WHM 계정 생성 요청', [
             'domain' => $domain,

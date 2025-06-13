@@ -63,7 +63,7 @@ class PaymentController extends Controller
     }
 
     // 5. WHM 계정 생성
-    $domain = "{$username}.cflow.dev";
+    $domain = "{$username}.hostyle.me";
     $email  = $user->email;
     $whm    = new WhmApiService($server);
     $result = $whm->createAccount($domain, $username, $password, $plan->name, $email);

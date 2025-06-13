@@ -18,8 +18,10 @@
         @foreach ($plans as $plan)
             <label class="cursor-pointer block">
                 <input type="radio" name="plan_id" value="{{ $plan->id }}"
-                       data-price="{{ $plan->price }}" data-name="{{ $plan->name }}"
-                       class="peer hidden" required>
+       data-price="{{ $plan->price }}"
+       data-name="{{ $plan->name }}"
+       data-disk="{{ $plan->disk_size }}"
+       class="peer hidden" required>
 
                 <div class="p-6 border rounded-xl bg-white transition-all peer-checked:border-blue-600 peer-checked:ring-2 peer-checked:ring-blue-200 hover:shadow-xl">
                     <div class="flex items-center justify-between mb-4">
@@ -83,7 +85,7 @@
                 @include('components.upgrade-progress-5', ['step' => 2])
                 <h3 class="text-xl font-bold mb-6">2단계: 결제 기간 선택</h3>
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    @foreach ([1 => '1개월', 3 => '3개월 (2%)', 6 => '6개월 (4%)', 12 => '1년 (10%)', 24 => '2년 (20%)'] as $key => $label)
+                    @foreach ([1 => '1개월', 3 => '3개월 (2%)', 6 => '6개월 (4%)', 12 => '1년 (10%)'] as $key => $label)
                         <label class="cursor-pointer">
                             <input type="radio" name="duration" value="{{ $key }}" class="peer hidden" {{ $key == 1 ? 'checked' : '' }}>
                             <div class="p-4 border rounded-lg text-center transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:shadow-md">
@@ -95,9 +97,15 @@
 <div id="price-summary" class="mt-4 bg-blue-50 border border-blue-300 rounded p-4 text-blue-800 font-semibold text-sm shadow-sm hidden">
     <!-- 자바스크립트에서 내용 채워짐 -->
 </div>
+<div id="virtual-account-warning" class="text-sm text-orange-600 mt-3 hidden">
+    ※ 6개월 이상 결제 시 가상계좌 결제는 불가 합니다.
+</div>
 <div id="early-cancel-warning" class="text-sm text-red-500 mt-2 hidden leading-snug">
     <!-- 할인 시 표시 -->
-</div>                <div class="mt-6 flex justify-between">
+</div>
+
+
+<div class="mt-6 flex justify-between">
                     <button type="button" onclick="goToStep(1)" class="px-6 py-2 bg-gray-400 text-white rounded hover:bg-gray-500">이전</button>
                     <button type="button" onclick="goToStep(3)" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">다음</button>
                 </div>
@@ -136,7 +144,7 @@
         </div>
         <div class="flex justify-between border-b pb-1">
             <span class="font-medium">도메인</span>
-            <span class="font-semibold text-right text-gray-900"><span id="summary-username"></span>.cflow.dev</span>
+            <span class="font-semibold text-right text-gray-900"><span id="summary-username"></span>.hostyle.me</span>
         </div>
         <div class="flex justify-between border-b pb-1">
             <span class="font-medium">이용 기간</span>
@@ -257,7 +265,7 @@
 <script>
     let finalPrice = 0;
     let currentStep = 1;
-    const discounts = { 1: 0, 3: 0.02, 6: 0.04, 12: 0.1, 24: 0.2 };
+    const discounts = { 1: 0, 3: 0.02, 6: 0.04, 12: 0.1 };
     const tossPayments = TossPayments("{{ config('services.toss.client_key') }}");
 
     function goToStep(step) {
@@ -292,8 +300,8 @@ function formatDate(date) {
 
 document.getElementById('summary-start').innerText = formatDate(now);
 document.getElementById('summary-end').innerText = formatDate(expiry);
-document.getElementById('summary-disk').innerText = selectedPlan.closest('label').querySelector('div.text-sm')?.innerText.split('/')[1] || '-';
-
+document.getElementById('summary-disk').innerText =
+    selectedPlan.dataset.disk + 'GB';
 
 
         document.getElementById('summary-plan-name').innerText = selectedPlan.dataset.name;
@@ -321,18 +329,27 @@ document.getElementById('summary-period').innerText = duration + ' 개월';
             `할인 적용 총 금액: ${discounted.toLocaleString()}원 (${discountRate * 100}% 할인)`;
         document.getElementById('price-summary').classList.remove('hidden');
 
-        // ✅ 위약금 안내 추가
+        // 위약금 안내 표시
         if (discountRate > 0) {
             document.getElementById('early-cancel-warning').innerHTML =
                 '※ 중도 해지 시 할인 반환 위약금이 발생 됩니다..<br>' +
-                '<span class=\"text-xs text-gray-700\">일반적으로 위약금은 <strong>(할인 금액 ÷ 총 개월수 × 잔여 개월수)</strong>로 계산됩니다.</span>';
+                '<span class="text-xs text-gray-700">일반적으로 위약금은 <strong>(할인 금액 ÷ 총 개월수 × 잔여 개월수)</strong>로 계산됩니다.</span>';
             document.getElementById('early-cancel-warning').classList.remove('hidden');
         } else {
             document.getElementById('early-cancel-warning').classList.add('hidden');
             document.getElementById('early-cancel-warning').innerHTML = '';
         }
+
+        // ✅ 가상계좌 결제 불가 안내
+        const warningBox = document.getElementById('virtual-account-warning');
+        if (months >= 6) {
+            warningBox.classList.remove('hidden');
+        } else {
+            warningBox.classList.add('hidden');
+        }
     });
 });
+
 
 
 

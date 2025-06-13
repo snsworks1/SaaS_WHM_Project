@@ -15,7 +15,7 @@
                     <!-- ✅ 버튼 영역 추가 -->
                     <div class="flex justify-between items-center mt-4">
                         <!-- cPanel 바로가기 -->
-                        <a href="https://panel-admin.cflow.dev:2083/login/?user={{ $service->whm_username }}" target="_blank"
+                        <a href="https://panel-admin-01.hostyle.me:2083/login/?user={{ $service->whm_username }}" target="_blank"
     class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
     cPanel 접속
 </a>

@@ -6,10 +6,10 @@
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-          <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/IconOnly_Transparent_NoBuffer.png') }}">
+          <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/IconOnly_Transparent.png') }}">
           
 
-  <title>Cflow SaaS 기반 웹호스팅</title>
+  <title>Hostyle SaaS 기반 웹호스팅</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -31,7 +31,7 @@
       <!-- Logo Placeholder -->
    
       <div class="text-lg font-bold">
-         <img src="images/FullLogo_Transparent_NoBuffer.png" class="w-48 h-auto mx-auto" >
+         <img src="images/logo.png" class="w-52 h-auto mx-auto" >
       </div>
     </div>
     <nav class="space-x-6 text-sm flex items-center">
@@ -56,7 +56,7 @@
 
 <!-- Hero -->
 <section class="px-6 py-20 max-w-7xl mx-auto text-center">
-  <h1 class="text-5xl font-extrabold mb-6 ">SaaS 자동화 웹 솔루션 - CFlow<br><br>강력하고 간편한 웹호스팅<br></h1>
+  <h1 class="text-5xl font-extrabold mb-6 ">SaaS 자동화 웹 솔루션 - Hostyle<br><br>강력하고 간편한 웹호스팅<br></h1>
   <p class="text-zinc-300 mb-6">회원가입 → 플랜 선택 → 결제 → 자동 구축<br>복잡한 설치 없이 3분 만에 내 웹사이트 오픈</p>
   <a href="{{ route('login') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">지금 시작하기</a>
 </section>
@@ -65,7 +65,7 @@
 <section id="why" class="bg-zinc-950 py-20 px-6">
   <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-10 items-center">
     <div>
-      <h2 class="text-5xl font-bold mb-4">왜 Cflow인가?</h2>
+      <h2 class="text-5xl font-bold mb-4">왜 Hostyle인가?</h2>
       <ul class="space-y-4 text-sm text-zinc-300">
         <li>✅ 클릭 한 번으로 WordPress 설치 완료</li>
         <li>✅ 프리미엄 유료 템플릿 무료 제공</li>
@@ -258,7 +258,7 @@ setInterval(() => {
         </svg>
       </button>
       <div class="faq-content px-6 pb-4 text-sm text-zinc-300 hidden">
-        네. 기본 제공되는 임시 도메인(예: yourname.cflow.dev)으로 먼저 시작할 수 있으며, 이후 도메인을 연결할 수 있습니다.
+        네. 기본 제공되는 임시 도메인(예: yourname.hostyle.me)으로 먼저 시작할 수 있으며, 이후 도메인을 연결할 수 있습니다.
       </div>
     </div>
 
@@ -311,7 +311,7 @@ setInterval(() => {
     <div class="max-w-6xl mx-auto px-4 text-center space-y-2">
         <p>
             <span class="inline-block">상호명: 에스앤에스웍스</span> |
-            <span class="inline-block">서비스명: CFlow</span> |
+            <span class="inline-block">서비스명: Hostyle</span> |
             <span class="inline-block">대표자: 김대현</span> |
             <span class="inline-block">사업자등록번호: 522-71-00290</span> |
             <span class="inline-block">통신판매업: 2018-경기포천-0387</span>
@@ -369,15 +369,15 @@ setInterval(() => {
 </script>
 
 <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-F476SE7JC5"></script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Y7BBE8FQ2H"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', 'G-F476SE7JC5');
+  gtag('config', 'G-Y7BBE8FQ2H');
 </script>
-
 
 </body>
 </html>
