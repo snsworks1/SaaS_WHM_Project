@@ -39,6 +39,9 @@
       <a href="#infra" class="hover:text-blue-400">인프라</a>
       <a href="#images" class="hover:text-blue-400">기능</a>
       <a href="#plans" class="hover:text-blue-400">요금제</a>
+      <a href="https://snsworks.notion.site/Hostyle-211e1708410c8059988edd67c34d73c5?source=copy_link" target="_blank" class="text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
+          📘 가이드북
+        </a>
       <!-- Login / Dashboard -->
       @auth
         <a href="{{ route('dashboard') }}" class="ml-6 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">

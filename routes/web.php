@@ -6,6 +6,8 @@ use App\Http\Controllers\PlansController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\UserServiceController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ServiceSettingsController;
+
 
 
 
@@ -88,3 +90,20 @@ Route::get('/checkout/fail', function () {
 Route::middleware(['auth'])->group(function () { #대시보드->결제내역
     Route::get('/dashboard/payments', [\App\Http\Controllers\Dashboard\PaymentController::class, 'index'])->name('dashboard.payments');
 });
+
+
+
+# 대시보드 고객사 서버 설정버튼 라우트
+Route::middleware(['auth'])->group(function () {
+    Route::get('/services/{service}/settings', [ServiceSettingsController::class, 'settings'])
+        ->name('services.settings');
+
+    Route::post('/services/{service}/install-wordpress', [ServiceSettingsController::class, 'installWordPress'])
+        ->name('services.installWordPress');
+
+});
+
+Route::get('/services/{id}/check-wp', [ServiceSettingsController::class, 'checkWordPress'])
+    ->middleware('auth')
+    ->name('services.checkWp');
+

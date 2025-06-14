@@ -21,6 +21,11 @@
 <x-nav-link href="{{route('dashboard.payments')}}" :active="request()->routeIs('dashboard.payments')">
     {{ __('결제 내역') }}
 </x-nav-link>
+<a href="https://snsworks.notion.site/Hostyle-211e1708410c8059988edd67c34d73c5?source=copy_link"
+   target="_blank"
+   class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-600 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white focus:outline-none focus:border-blue-500 transition duration-150 ease-in-out">
+   📘 가이드북
+</a>
 
                 </div>
             </div>

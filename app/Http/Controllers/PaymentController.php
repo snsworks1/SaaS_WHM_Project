@@ -9,7 +9,7 @@ use App\Models\Payment;
 use App\Services\WhmApiService;
 use App\Services\WhmServerPoolService;
 use App\Services\CloudflareService;
-
+use Illuminate\Support\Facades\Crypt;
 
 class PaymentController extends Controller
 {
@@ -70,8 +70,12 @@ class PaymentController extends Controller
     \Log::info('✅ WHM 계정 생성 결과', ['response' => $result]);
 
     // 6. DNS 레코드 생성
-    app(CloudflareService::class)->createDnsRecord($domain, $server->ip_address);
+  $cloudflare = new CloudflareService();
+    $dnsRecordId = $cloudflare->createDnsRecord($domain, $server->ip_address);
 
+    if (!$dnsRecordId) {
+        return [false, 'Cloudflare DNS 생성 실패'];
+    }
     // 7. 서비스 기록
     \App\Models\Service::create([
         'user_id'        => $user->id,
@@ -81,6 +85,8 @@ class PaymentController extends Controller
         'whm_server_id'  => $server->id,
         'expired_at'     => now()->addMonths($period),
         'status'         => 'active',
+            'dns_record_id'  => $dnsRecordId, // ✅ 이 값이 실제로 들어가야 함
+            'whm_password'   => Crypt::encryptString($password), // ✅ 추가
     ]);
 
     // 8. 완료 페이지로

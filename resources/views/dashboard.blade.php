@@ -17,9 +17,13 @@
                         <!-- cPanel 바로가기 -->
                         <a href="https://panel-admin-01.hostyle.me:2083/login/?user={{ $service->whm_username }}" target="_blank"
     class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-    cPanel 접속
+    cPanel 접속 
 </a>
 
+    <a href="{{ route('services.settings', $service->id) }}"
+   class="inline-flex items-center px-3 py-2 bg-gray-700 text-white rounded hover:bg-gray-800 text-sm">
+   설정
+</a>
                         <!-- 업/다운그레이드 버튼 -->
                         <a href="{{ route('services.changePlan', $service->id) }}"
                            class="inline-flex items-center px-3 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-sm">

@@ -7,15 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class Service extends Model
 {
     protected $fillable = [
-        'user_id',
-        'plan_id',
-        'whm_username',
-        'whm_domain',
-        'whm_server_id',
-        'expired_at',
-        'status',
-        'dns_record_id' // ✅ 이거 추가!!!
-    ];
+    'user_id',
+    'plan_id',
+    'whm_username',
+    'whm_domain',
+    'whm_server_id',
+    'expired_at',
+    'status',
+    'dns_record_id',       // 이미 추가된 필드
+    'whm_password'         // ✅ 여기에 추가해야 저장됨
+];
     protected $dates = [
         'started_at',
         'expired_at'
