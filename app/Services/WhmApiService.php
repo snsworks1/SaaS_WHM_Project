@@ -150,6 +150,33 @@ public function changePackage($username, $newPackage)
     ]);
 }
 
+public function createCpanelSession($cpUsername)
+{
+
+    # WHM (루트 계정) 권한으로 특정 사용자(cPanel 계정)에 대해 로그인 세션을 발급하고,
+    # cPanel UI로 바로 들어갈 수 있는 URL을 반환합니다.
+    $response = Http::withHeaders([
+        'Authorization' => 'whm ' . $this->username . ':' . $this->token,
+    ])->withOptions([
+        'verify' => false,
+    ])->get("https://{$this->server->api_hostname}:2087/json-api/create_user_session", [
+        'api.version' => 1,
+        'user' => $cpUsername,
+        'service' => 'cpaneld',
+    ]);
+
+    $data = $response->json();
+
+    if (isset($response['data']['url'])) {
+        $url = $response['data']['url'];
+
+        // ✅ 도메인으로 치환 (임시 우회용)
+        return str_replace($this->server->ip_address, $this->server->api_hostname, $url);
+    }
+
+    \Log::error('❌ create_user_session 실패', ['response' => $data]);
+    return null;
+}
 
 
 }

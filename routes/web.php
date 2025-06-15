@@ -107,3 +107,5 @@ Route::get('/services/{id}/check-wp', [ServiceSettingsController::class, 'checkW
     ->middleware('auth')
     ->name('services.checkWp');
 
+Route::get('/services/{id}/cpanel-url', [UserServiceController::class, 'getCpanelUrl'])
+    ->name('services.getCpanelUrl');

@@ -15,10 +15,26 @@
                     <!-- ✅ 버튼 영역 추가 -->
                     <div class="flex justify-between items-center mt-4">
                         <!-- cPanel 바로가기 -->
-                        <a href="https://panel-admin-01.hostyle.me:2083/login/?user={{ $service->whm_username }}" target="_blank"
-    class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-    cPanel 접속 
-</a>
+                        <button
+    onclick="openCpanel({{ $service->id }})"
+    class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+>
+    cPanel 바로가기
+</button>
+
+<script>
+function openCpanel(id) {
+    fetch(`/services/${id}/cpanel-url`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.open(data.url, '_blank');
+            } else {
+                alert('cPanel URL을 가져오지 못했습니다.');
+            }
+        });
+}
+</script>
 
     <a href="{{ route('services.settings', $service->id) }}"
    class="inline-flex items-center px-3 py-2 bg-gray-700 text-white rounded hover:bg-gray-800 text-sm">
