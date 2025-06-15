@@ -44,7 +44,11 @@ return [
         'port' => env('SSH_PORT', 22),
     ],
 
-
+'cloudflare' => [
+    'api_token' => env('CLOUDFLARE_API_TOKEN'),
+    'zone_id' => env('CLOUDFLARE_ZONE_ID'),
+    'api_base' => env('CLOUDFLARE_API_BASE', 'https://api.cloudflare.com/client/v4/'),
+],
 
 
 ];

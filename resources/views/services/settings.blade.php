@@ -8,6 +8,24 @@
             <p><strong>WHM 계정:</strong> {{ $service->whm_username }}</p>
             <p><strong>도메인:</strong> {{ $service->whm_domain }}</p>
 
+
+            <!-- DB 정보 -->
+<!-- DB 정보 (개선 UI) -->
+<div class="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+    <div class="flex items-center mb-3">
+        <svg class="h-5 w-5 text-gray-500 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+            viewBox="0 0 24 24">
+            <path d="M4 4v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V4M4 4h16M4 4l8 6.5L20 4" />
+        </svg>
+        <h3 class="text-sm font-bold text-gray-800">데이터베이스 정보</h3>
+    </div>
+
+    <div class="text-sm text-gray-700 space-y-1 pl-1">
+        <p><span class="font-semibold">DB 이름:</span> <code class="bg-white px-1 py-0.5 rounded border text-blue-700">{{ $service->whm_username }}_db</code></p>
+        <p><span class="font-semibold">DB 유저:</span> <code class="bg-white px-1 py-0.5 rounded border text-blue-700">{{ $service->whm_username }}_admin</code></p>
+        <p><span class="font-semibold">DB 비밀번호:</span> <span class="text-gray-500">(WHM 계정 비밀번호와 동일 - 보안상 비공개)</span></p>
+    </div>
+</div>
             <hr>
             <h3 class="text-lg font-bold">워드프레스 자동 설치</h3>
 

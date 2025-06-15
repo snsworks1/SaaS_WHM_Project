@@ -13,10 +13,10 @@ class CloudflareService
 
     public function __construct()
     {
-        $this->apiToken = env('CLOUDFLARE_API_TOKEN');
-        $this->zoneId = env('CLOUDFLARE_ZONE_ID');
-        $this->apiBase = env('CLOUDFLARE_API_BASE', 'https://api.cloudflare.com/client/v4/');
-    }
+$this->apiToken = config('services.cloudflare.api_token');
+$this->zoneId   = config('services.cloudflare.zone_id');
+$this->apiBase  = config('services.cloudflare.api_base');
+   }
 
     /**
      * DNS 레코드 생성

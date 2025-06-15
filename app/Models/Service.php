@@ -72,4 +72,6 @@ class Service extends Model
     return now()->diffInDays($this->expired_at, false);
 }
 
+
+
 }

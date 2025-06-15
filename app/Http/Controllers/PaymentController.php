@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Plan;
@@ -10,6 +12,8 @@ use App\Services\WhmApiService;
 use App\Services\WhmServerPoolService;
 use App\Services\CloudflareService;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Http;
+use Symfony\Component\Process\Process;
 
 class PaymentController extends Controller
 {
@@ -67,7 +71,8 @@ class PaymentController extends Controller
     $email  = $user->email;
     $whm    = new WhmApiService($server);
     $result = $whm->createAccount($domain, $username, $password, $plan->name, $email);
-    \Log::info('✅ WHM 계정 생성 결과', ['response' => $result]);
+
+
 
     // 6. DNS 레코드 생성
   $cloudflare = new CloudflareService();
@@ -76,6 +81,41 @@ class PaymentController extends Controller
     if (!$dnsRecordId) {
         return [false, 'Cloudflare DNS 생성 실패'];
     }
+
+
+    // DB 정보
+$cpUser     = $username;
+$dbName     = "{$cpUser}_db";
+$dbUser     = "{$cpUser}_admin";
+$dbPassword = $password;
+
+// 명령어 목록
+$commands = [
+    "uapi --user={$cpUser} Mysql create_database name={$dbName} collation=utf8_general_ci",
+    "uapi --user={$cpUser} Mysql create_user name={$dbUser} password={$dbPassword}",
+    "uapi --user={$cpUser} Mysql set_privileges_on_database user={$dbUser} database={$dbName} privileges=ALL",
+];
+
+// SSH 접속 정보
+$sshUser = 'root'; // 또는 설정된 SSH 유저
+$sshHost = $server->ip_address;   // 또는 hostname
+$sshPort = 49999;
+
+// 명령 실행
+foreach ($commands as $cmd) {
+    $sshCommand = "ssh -p {$sshPort} {$sshUser}@{$sshHost} '{$cmd}'";
+        $process = Process::fromShellCommandline($sshCommand);
+    $process->run();
+
+    if ($process->isSuccessful()) {
+        Log::info("✅ SSH 명령 실행 성공: {$cmd}", ['output' => $process->getOutput()]);
+    } else {
+        Log::error("❌ SSH 명령 실행 실패: {$cmd}", ['error' => $process->getErrorOutput()]);
+        abort(500, "DB 자동생성 실패: {$cmd}");
+    }
+}
+
+
     // 7. 서비스 기록
     \App\Models\Service::create([
         'user_id'        => $user->id,

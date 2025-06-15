@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Http;
 use App\Models\WhmServer;
 
 class WhmApiService
@@ -9,12 +10,14 @@ class WhmApiService
     protected $url;
     protected $token;
     protected $username;
+        protected $server;
 
     public function __construct(WhmServer $server)
     {
         $this->url = rtrim($server->api_url, '/');
         $this->token = $server->api_token;
         $this->username = $server->username;
+                $this->server = $server;
     }
 
     // WhmApiService 내부 수정
@@ -146,5 +149,7 @@ public function changePackage($username, $newPackage)
         'pkg' => $newPackage
     ]);
 }
+
+
 
 }
