@@ -116,6 +116,10 @@ foreach ($commands as $cmd) {
 }
 
 
+// 6.5. WHM 서버 디스크 사용량 증가
+$server->used_disk_capacity = ($server->used_disk_capacity ?? 0) + $plan->disk_size;
+$server->save();
+
     // 7. 서비스 기록
     \App\Models\Service::create([
         'user_id'        => $user->id,

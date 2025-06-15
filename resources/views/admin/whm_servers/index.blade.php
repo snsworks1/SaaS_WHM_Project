@@ -26,12 +26,35 @@
                 @endif
             </div>
 
+            <div class="mb-2">
+    <p class="text-sm text-gray-500 mb-2">SSH 상태:
+    @if($server->ssh_status === 'reachable')
+        <span class="inline-block px-2 py-1 text-xs font-semibold bg-green-100 text-green-700 rounded">접속 가능</span>
+    @else
+        <span class="inline-block px-2 py-1 text-xs font-semibold bg-red-100 text-red-700 rounded">접속 불가</span>
+    @endif
+</p>
+</div>
+
             @if($server->connection_status === 'connected')
                 <div class="text-sm text-gray-700">
                     <p>계정 수: <span class="font-semibold">{{ $server->account_count }}</span></p>
-                    <p>디스크 사용량: <span class="font-semibold">{{ $server->disk_usage }}</span></p>
-                    <p>서버 부하 (Load): <span class="font-semibold">{{ $server->server_load }}</span></p>
-                    <p>메모리 사용량: <span class="font-semibold">{{ $server->memory_usage ?? 'N/A' }}</span></p>
+                    <p>
+    디스크 사용량: 
+    <span class="font-semibold">
+        {{ $server->used_disk_capacity }} GB / {{ $server->total_disk_capacity }} GB
+    </span>
+    <div class="w-full bg-gray-100 rounded h-2 mt-1">
+        @php
+            $usagePercent = $server->total_disk_capacity > 0 
+                ? ($server->used_disk_capacity / $server->total_disk_capacity) * 100 
+                : 0;
+        @endphp
+        <div class="bg-blue-500 h-2 rounded" style="width: {{ $usagePercent }}%"></div>
+    </div>
+</p>
+
+
                 </div>
             @else
                 <div class="text-sm text-gray-500 italic">모니터링 불가</div>

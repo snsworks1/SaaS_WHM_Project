@@ -15,6 +15,12 @@ class WhmServerController extends Controller
 
         $servers = $servers->map(function ($server) {
             $service = new WhmApiService($server);
+
+            // ✅ SSH 연결 상태 확인
+            $port = $server->port ?? 49999;
+            $server->ssh_status = $this->checkSshConnection($server->ip_address, $port) ? 'reachable' : 'unreachable';
+
+            // ✅ WHM API 연결 상태 확인
             $server->connection_status = $service->checkConnection() ? 'connected' : 'disconnected';
 
             if ($server->connection_status === 'connected') {
@@ -102,4 +108,17 @@ class WhmServerController extends Controller
 
         return view('admin.whm_servers.monitor', compact('server', 'accountCount', 'serverLoad'));
     }
+
+    // ✅ SSH 연결 체크 함수 (static 아님)
+    private function checkSshConnection($ip, $port = 49999): bool
+    {
+        $connection = @fsockopen($ip, $port, $errno, $errstr, 3);
+        if ($connection) {
+            fclose($connection);
+            return true;
+        }
+        return false;
+    }
+
+
 }
