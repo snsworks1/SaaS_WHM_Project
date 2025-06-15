@@ -40,9 +40,9 @@ return [
     'webhook_secret' => env('TOSS_WEBHOOK_SECRET'),
 ],
     'ssh' => [
-    'username' => env('SSH_USERNAME'),
-    'port' => env('SSH_PORT'),
-],
+        'username' => env('SSH_USER', 'root'),
+        'port' => env('SSH_PORT', 22),
+    ],
 
 
 
