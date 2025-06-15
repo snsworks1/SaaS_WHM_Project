@@ -1,6 +1,133 @@
 
 ## 🔄 최근 작업 내역
 
+
+
+✅ WHM SaaS 시스템 진행 작업 내역 (2025-06-16 기준)
+1. users, plans, services 기본 모델 및 DB 설계
+📁 app/Models/User.php, Plan.php, Service.php
+
+    사용자/플랜/서비스 연동 설계
+
+    Service 모델에 whm_server_id, whm_username, whm_password, expired_at 등 필드 추가
+
+    getStatusAttribute, getDaysLeftAttribute로 상태 계산 자동화
+
+2. 플랜 선택 및 결제 흐름 구현
+📁 routes/web.php
+
+Route::get('/checkout/confirm', [PaymentController::class, 'confirmGet'])->name('checkout.confirm');
+
+📁 app/Http/Controllers/PaymentController.php
+
+    Toss Payments 결제 완료 후
+
+        유저 플랜 업데이트
+
+        사용 가능한 WHM 서버 자동 선택
+
+        WHM 계정 자동 생성 (WHM API 사용)
+
+        DNS 자동 생성 (Cloudflare API 사용)
+
+        cPanel DB 자동 생성 (SSH + uapi 사용)
+
+        서비스(services) 테이블에 등록
+
+✅ 디스크 사용량 증가 로직 포함:
+
+$server->used_disk_capacity += $plan->disk_size;
+$server->save();
+
+3. WHM 서버 관리 기능 (Admin 전용)
+📁 app/Http/Controllers/Admin/WhmServerController.php
+
+    서버 추가/수정/삭제
+
+    실시간 연결 상태 확인 (WHM API 연결 테스트)
+
+    SSH 연결 가능 여부 확인 (fsockopen 사용)
+
+    각 서버의 계정 수 및 디스크 사용량 표시
+
+📁 resources/views/admin/whm_servers/index.blade.php
+
+    카드 형태 UI로 각 서버 상태 시각화
+
+    연결 상태, SSH 상태, 계정 수, 디스크 사용량, 사용률 등 표시
+
+4. 서비스 설정 페이지 (워드프레스 설치)
+📁 resources/views/services/settings.blade.php
+
+    DB 정보 출력: DB 이름, 사용자, 비밀번호 비공개 표시
+
+    워드프레스 설치 여부 실시간 확인
+
+    설치 진행 시, 압축 다운로드 및 해제 자동화 진행 표시 (progress bar 포함)
+
+5. cPanel 자동 로그인 기능
+📁 app/Http/Controllers/UserServiceController.php
+
+public function openCpanel($id)
+{
+    $service = Service::findOrFail($id);
+    $server = $service->whmServer;
+
+    if (!$server) {
+        return redirect()->back()->with('error', 'WHM 서버 정보 없음');
+    }
+
+    $api = new WhmApiService($server);
+    $url = $api->createCpanelSession($service->whm_username);
+
+    return $url ? redirect()->away($url) : redirect()->back()->with('error', 'cPanel 자동 로그인 실패');
+}
+
+📁 app/Services/WhmApiService.php
+
+public function createCpanelSession(string $cpUsername): ?string
+{
+    $response = Http::withHeaders([
+        'Authorization' => 'whm ' . $this->username . ':' . $this->token,
+    ])->withOptions(['verify' => false])->get("https://{$this->server->api_hostname}:2087/json-api/create_user_session", [
+        'api.version' => 1,
+        'user' => $cpUsername,
+        'service' => 'cpaneld',
+    ]);
+
+    return $response['data']['session'] ?? null;
+}
+
+6. DB 자동 생성 기능
+🔧 명령 실행 방식
+
+    SSH 접속 → uapi 명령어 3종 실행
+
+        create_database
+
+        create_user
+
+        set_privileges_on_database
+
+✅ 예시:
+
+$commands = [
+    "uapi --user={$cpUser} Mysql create_database name={$dbName} collation=utf8_general_ci",
+    "uapi --user={$cpUser} Mysql create_user name={$dbUser} password={$dbPassword}",
+    "uapi --user={$cpUser} Mysql set_privileges_on_database user={$dbUser} database={$dbName} privileges=ALL",
+];
+
+7. 기타 설정 및 개선 사항
+
+    used_disk_capacity, total_disk_capacity 필드 연동 완료 (whm_servers)
+
+    ssh 포트 49999 기본 적용
+
+    WHM 서버에 Laravel 서버의 SSH 키 등록을 통해 명령 실행 자동화 완료
+
+    WHM 서버 hostname: panel-admin-01.hostyle.me 등으로 설정 후, 실제 자동로그인 URL에도 반영 완료
+
+
 ### 2025-06-11
 
 #### 🧾 회원가입 개인정보 동의 처리 개선
