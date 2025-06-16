@@ -39,7 +39,7 @@
       <a href="#infra" class="hover:text-blue-400">인프라</a>
       <a href="#images" class="hover:text-blue-400">기능</a>
       <a href="#plans" class="hover:text-blue-400">요금제</a>
-      <a href="https://snsworks.notion.site/Hostyle-211e1708410c8059988edd67c34d73c5?source=copy_link" target="_blank" class="text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
+      <a href="https://s-organization-887.gitbook.io/hostyle-web/" target="_blank" class="text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
           📘 가이드북
         </a>
       <!-- Login / Dashboard -->
@@ -322,7 +322,7 @@ setInterval(() => {
        
         </p>
         <p>
-            <span class="inline-block">사업장 주소: 경기도 의정부시 평화로 483번길 23, 202호</span> |
+            <span class="inline-block">사업장 주소: 서울특별시 강남구 강남대로 112길 47, 2층 369A호</span> |
             <span class="inline-block">고객센터: 010-5914-3150</span>
         </p>
     </div>
