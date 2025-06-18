@@ -1,6 +1,55 @@
 
 ## 🔄 최근 작업 내역
 
+✅ WHM SaaS 시스템 진행 작업 내역 (2025-06-18 기준)
+
+✨ 사용자 공지사항 시스템 구축
+
+    사용자용 공지사항 리스트 페이지(/notices)
+
+        공지 종류, 중요도, 제목, 작성일 포함된 테이블 형태
+
+        최신순 정렬 및 보기 편한 디자인
+
+    공지사항 상세 보기 기능
+
+        /api/notices/{id}로 JSON 받아와 모달로 표시
+
+        Editor.js 포맷(JSON)을 HTML로 변환하여 시각적으로 렌더링
+
+    공지사항 미리보기 모달 구현 (대시보드)
+
+        제목 클릭 시 전체 내용 팝업으로 표시
+
+    사용자 대시보드에 최근 공지사항 3개 표시
+
+        제목 클릭 → 모달
+
+        "자세히 보기" → 공지사항 전체 리스트 페이지로 이동
+
+📄 서비스 플랜 변경 기능 구현
+
+    새로운 컨트롤러: PlanUpgradeController 생성
+
+    라우팅: 기존 UserServiceController → PlanUpgradeController 로 교체
+
+    사용자 플랜 변경 3단계 flow:
+
+        /services/{id}/change-plan : 업그레이드 가능한 플랜 리스트
+
+        /services/{id}/confirm-upgrade : 차액 계산 및 결제 확인
+
+        /services/{id}/process-upgrade : 실제 패키지 변경 처리 + WHM API 호출
+
+    플랜 업그레이드 후 완료 페이지: /services/{id}/upgrade-complete
+
+🎨 대시보드 UI 개선
+
+    요약 카드 영역과 헤더 사이 여백 추가 (mt-8)
+
+    공지사항/패치노트 영역 위쪽 여백 추가 (mt-32)
+
+    각 카드별 여백 및 컬럼 배치 개선 (Tailwind grid)
 
 
 ✅ WHM SaaS 시스템 진행 작업 내역 (2025-06-16 기준)

@@ -7,7 +7,13 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\UserServiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ServiceSettingsController;
-
+use App\Http\Controllers\NoticeController;
+use App\Http\Controllers\PatchnoteController;
+use App\Http\Controllers\Admin\PatchnoteController as AdminPatchnoteController;
+use App\Http\Controllers\Admin\NoticeController as AdminNoticeController;
+use App\Http\Controllers\Admin\UploadController;
+use App\Models\Notice;
+use App\Http\Controllers\PlanUpgradeController;
 
 
 
@@ -72,9 +78,10 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
 
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/services/{id}/change-plan', [UserServiceController::class, 'showChangePlan'])->name('services.changePlan');
-    Route::post('/services/{id}/confirm-upgrade', [UserServiceController::class, 'confirmUpgrade'])->name('services.confirmUpgrade');
-    Route::post('/services/{id}/process-upgrade', [UserServiceController::class, 'processUpgrade'])->name('services.processUpgrade');
+    Route::get('/services/{id}/change-plan', [PlanUpgradeController::class, 'showChangePlan'])->name('services.changePlan');
+    Route::post('/services/{id}/confirm-upgrade', [PlanUpgradeController::class, 'confirmUpgrade'])->name('services.confirmUpgrade');
+    Route::post('/services/{id}/process-upgrade', [PlanUpgradeController::class, 'processUpgrade'])->name('services.processUpgrade');
+    Route::get('/services/{id}/upgrade-complete', [PlanUpgradeController::class, 'upgradeComplete'])->name('services.upgradeComplete');
 });
 
 Route::get('/services/{id}/upgrade-complete', [UserServiceController::class, 'upgradeComplete'])->name('services.upgradeComplete');
@@ -109,3 +116,19 @@ Route::get('/services/{id}/check-wp', [ServiceSettingsController::class, 'checkW
 
 Route::get('/services/{id}/cpanel-url', [UserServiceController::class, 'getCpanelUrl'])
     ->name('services.getCpanelUrl');
+
+Route::get('/notices', [NoticeController::class, 'index'])->name('notices.index');
+Route::get('/notices/{id}', [NoticeController::class, 'show'])->name('notices.show');
+
+Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () {
+   
+    // 공지사항
+    Route::resource('notices', AdminNoticeController::class);
+
+    // Editor.js 이미지 업로드
+    Route::post('/uploads/editorjs', [UploadController::class, 'editorjs'])->name('editorjs.upload');
+});
+
+Route::get('/api/notices/{id}', function ($id) {
+    return Notice::findOrFail($id);
+});

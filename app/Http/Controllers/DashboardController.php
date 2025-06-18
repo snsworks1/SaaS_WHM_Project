@@ -4,13 +4,32 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Service;
+use App\Models\Notice;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $services = auth()->user()->services()->with('plan')->latest()->get();
+        $user = auth()->user();
+        $services = $user->services;
+        $notices = Notice::latest()->take(3)->get();
 
-        return view('dashboard', compact('services'));
+        $activeServiceCount = $services->count();
+
+        $expiringSoonCount = $services->filter(function ($service) {
+            return $service->expires_at && now()->diffInDays($service->expires_at, false) <= 3;
+        })->count();
+
+        $monthlyTotal = $services->sum(function ($service) {
+            return $service->plan->price ?? 0;
+        });
+
+        return view('dashboard', compact(
+            'services',
+            'activeServiceCount',
+            'expiringSoonCount',
+            'monthlyTotal',
+            'notices'
+        ));
     }
 }

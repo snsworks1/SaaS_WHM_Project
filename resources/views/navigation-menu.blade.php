@@ -26,7 +26,9 @@
    class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-600 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white focus:outline-none focus:border-blue-500 transition duration-150 ease-in-out">
    📘 가이드북
 </a>
-
+<x-nav-link href="{{route('notices.index')}}" :active="request()->routeIs('notices.index')">
+    {{ __('공지사항') }}
+</x-nav-link>
                 </div>
             </div>
 
