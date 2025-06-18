@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Service;
+
 use App\Models\WhmServer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -10,6 +11,9 @@ use Symfony\Component\Process\Process as SymfonyProcess;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Support\Facades\Crypt;
+use Carbon\Carbon;
+use App\Services\RefundCalculator;
+
 
 class ServiceSettingsController extends Controller
 {
@@ -104,6 +108,40 @@ if (!$zipUrl) {
         Log::error('❌ 워드프레스 설치 실패', ['error' => $process->getErrorOutput()]);
         return back()->with('error', '설치 중 오류가 발생했습니다.');
     }
+}
+
+
+public function refundForm($id)
+{
+    $service = Service::with(['plan', 'payment'])->findOrFail($id);
+    $calc = RefundCalculator::calculate($service);
+
+    return view('services.refund', array_merge($calc, [
+        'service' => $service,
+        'plan'    => $service->plan,
+    ]));
+}
+
+public function processRefund(Request $request, $id)
+{
+        \Log::info('🟠 환불 요청 접수됨', ['id' => $id, 'reason' => $request->reason]);
+    $service = Service::with(['plan', 'payment'])->findOrFail($id);
+    $calc = RefundCalculator::calculate($service);
+
+    if ($service->plan->price == 0 || !$calc['isEligible']) {
+        return back()->with('error', '환불 조건을 만족하지 않습니다.');
+    }
+
+    $toss = app(\App\Services\TossPaymentService::class);
+    $result = $toss->cancelPayment($service->payment->payment_key, $request->reason ?? '사용자 환불 요청', $calc['refundable']);
+
+    if (isset($result['status']) && $result['status'] === 'CANCELED') {
+        $service->payment->update(['status' => 'CANCELED']);
+        $service->update(['status' => 'canceled']);
+        return back()->with('success', '환불이 완료되었습니다.');
+    }
+
+    return back()->with('error', '환불 처리에 실패했습니다.');
 }
 
 

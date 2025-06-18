@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Payment;
 
 class Service extends Model
 {
@@ -70,6 +71,11 @@ class Service extends Model
     }
 
     return now()->diffInDays($this->expired_at, false);
+}
+
+public function payment()
+{
+    return $this->hasOne(\App\Models\Payment::class, 'order_id', 'order_id');
 }
 
 

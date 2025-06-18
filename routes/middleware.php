@@ -9,7 +9,7 @@ return [
 'csrf' => [
         // Toss Webhook 예외 처리 등록
         'except' => [
-            '/webhook/toss',
+            '/webhooks/toss',
         ],
         'middleware' => VerifyCsrfToken::class,
     ],

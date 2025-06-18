@@ -3,6 +3,7 @@
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             결제내역
         </h2>
+        <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     </x-slot>
 
     <div class="py-12">
@@ -40,7 +41,7 @@
                                     <td class="px-4 py-2">{{ $payment->order_id }}</td>
                                     <td class="px-4 py-2">
     @if ($payment->receipt_url)
-        <a href="{{ $payment->receipt_url }}" target="_blank" class="text-blue-600 underline">영수증</a>
+        <a href="#" onclick="showReceiptModal('{{ $payment->receipt_url }}')" class="text-blue-600 underline">영수증</a>
     @else
         <span class="text-gray-400">-</span>
     @endif
@@ -53,4 +54,56 @@
             @endif
         </div>
     </div>
+
+    @push('scripts')
+<script>
+    function showReceiptModal(url) {
+        const modal = document.getElementById('receiptModal');
+        const frame = document.getElementById('receiptFrame');
+        frame.src = url;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('receiptModal');
+        const frame = document.getElementById('receiptFrame');
+        frame.src = '';
+        modal.classList.add('hidden');
+    }
+
+    function printReceipt() {
+        const iframe = document.getElementById('receiptFrame');
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+    }
+
+    function downloadScreenshot() {
+        const iframe = document.getElementById('receiptFrame');
+        const iframeWindow = iframe.contentWindow;
+        html2canvas(iframeWindow.document.body).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'receipt.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    }
+</script>
+@endpush
+
 </x-app-layout>
+
+
+<!-- Receipt Modal -->
+<div id="receiptModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white w-full max-w-3xl p-6 rounded shadow relative">
+        <h2 class="text-xl font-bold mb-4">🧾 영수증 상세</h2>
+        <iframe id="receiptFrame" src="" class="w-full h-[600px] border rounded"></iframe>
+
+        <div class="mt-4 flex justify-end space-x-3">
+            <button onclick="printReceipt()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">🖨️ 인쇄</button>
+            <button onclick="downloadScreenshot()" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">📸 이미지 저장</button>
+            <button onclick="closeModal()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">닫기</button>
+        </div>
+    </div>
+</div>

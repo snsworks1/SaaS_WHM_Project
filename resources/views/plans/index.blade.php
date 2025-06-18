@@ -16,6 +16,12 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         @foreach ($plans as $plan)
+
+    {{-- 테스트 플랜은 특정 사용자만 보이게 --}}
+    @if ($plan->name === 'test' && (!auth()->check() || auth()->user()->email !== 'snsworks1@gmail.com'))
+        @continue
+    @endif
+
             <label class="cursor-pointer block">
                 <input type="radio" name="plan_id" value="{{ $plan->id }}"
        data-price="{{ $plan->price }}"
@@ -61,6 +67,11 @@
                 </div>
             </label>
         @endforeach
+
+
+
+
+
     </div>
 
     <div class="mt-6 text-center text-sm text-gray-500">

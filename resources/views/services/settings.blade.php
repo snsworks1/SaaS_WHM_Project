@@ -71,6 +71,15 @@
             <hr>
             <h3 class="text-lg font-bold">테마 선택</h3>
             {{-- 향후 테마 UI --}}
+
+             <hr>
+            <div class="mt-8">
+                <a href="{{ route('services.refundForm', $service->id) }}"
+   data-turbo="false"
+   class="block w-full text-center bg-red-600 hover:bg-red-700 text-white py-2 rounded">
+    💸 환불 요청하기
+</a>
+            </div>
         </div>
     </div>
 

@@ -16,6 +16,6 @@ class VerifyCsrfToken extends Middleware
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
      protected $except = [
-        '/webhook/toss', // Toss 웹훅 CSRF 예외
-    ];
+    'webhooks/*',
+];
 }

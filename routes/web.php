@@ -27,7 +27,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth'])
     ->name('dashboard');
 
-    
+
 
 
 Route::middleware([
@@ -116,6 +116,14 @@ Route::get('/services/{id}/check-wp', [ServiceSettingsController::class, 'checkW
 
 Route::get('/services/{id}/cpanel-url', [UserServiceController::class, 'getCpanelUrl'])
     ->name('services.getCpanelUrl');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/services/{id}/refund', [ServiceSettingsController::class, 'refundForm'])->name('services.refundForm');
+    
+});
+Route::post('/services/{id}/process-refund', [ServiceSettingsController::class, 'processRefund'])
+    ->name('services.processRefund')
+    ->middleware('auth');
 
 Route::get('/notices', [NoticeController::class, 'index'])->name('notices.index');
 Route::get('/notices/{id}', [NoticeController::class, 'show'])->name('notices.show');
