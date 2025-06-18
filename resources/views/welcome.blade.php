@@ -317,7 +317,7 @@ setInterval(() => {
             <span class="inline-block">서비스명: Hostyle</span> |
             <span class="inline-block">대표자: 김대현</span> |
             <span class="inline-block">사업자등록번호: 522-71-00290</span> |
-            <span class="inline-block">통신판매업: 2018-경기포천-0387</span>
+            <span class="inline-block">통신판매업: 2025-서울강남-03345</span>
 
        
         </p>
