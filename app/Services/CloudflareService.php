@@ -48,18 +48,20 @@ $this->apiBase  = config('services.cloudflare.api_base');
     /**
      * DNS 레코드 삭제
      */
-    public function deleteDnsRecord($recordId)
-    {
-        $response = Http::withToken($this->apiToken)
-            ->delete($this->apiBase . "zones/{$this->zoneId}/dns_records/{$recordId}");
+    public function deleteDnsRecord(string $domain, string $recordId)
+{
+    $response = Http::withToken($this->apiToken)
+        ->delete($this->apiBase . "zones/{$this->zoneId}/dns_records/{$recordId}");
 
-        if ($response->successful()) {
-            return true;
-        } else {
-            Log::error('Cloudflare DNS Delete Failed', ['response' => $response->body()]);
-            return false;
-        }
+    if ($response->successful()) {
+        Log::info("🧹 DNS 레코드 삭제 성공", ['domain' => $domain, 'recordId' => $recordId]);
+        return true;
+    } else {
+        Log::error('Cloudflare DNS Delete Failed', ['domain' => $domain, 'recordId' => $recordId, 'response' => $response->body()]);
+        return false;
     }
+}
+    
 
     /**
      * 기존 DNS 레코드 조회 (보조함수)

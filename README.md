@@ -3,6 +3,32 @@
 
 
 📌 SaaS 시스템 기능 개선 내역 (2025-06-19 기준)
+
+## ✅ 환불 승인 시 서비스 자동 삭제 처리
+
+환불 웹훅(`PAYMENT_STATUS_CHANGED` + `status: CANCELED`) 수신 시, 다음 절차에 따라 서비스가 자동 삭제됩니다:
+
+### 🔄 처리 흐름
+1. Toss Webhook 수신 (`WebhookController@handleTossWebhook`)
+2. 주문번호(`order_id`)로 서비스 조회
+3. `ProvisioningService::terminateService($service)` 실행
+
+### 🧹 자동 삭제 항목
+- WHM 계정 삭제 (`removeacct`)
+- Cloudflare DNS 레코드 삭제
+- 서비스 DB 레코드 삭제
+- 사용된 WHM 서버 디스크 사용량 차감 (`used_disk_capacity`)
+
+### ⚙️ 디스크 차감 방식
+- `services.plan_id` → 연결된 플랜(`plans.disk_size`) 기준으로 차감
+- 차감 후 음수 방지를 위해 `max(0, used - plan.disk_size)` 적용
+
+### 🛠 실패 처리
+- WHM 삭제, DNS 삭제, DB 삭제 중 예외 발생 시 `ErrorLog` 테이블에 자동 기록
+  - level, type, title, message, server_id, whm_username 등 포함
+
+
+
 ✅ 결제 완료 후 자동 프로비저닝 기능 구현
 연동 흐름:
 

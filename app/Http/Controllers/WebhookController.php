@@ -38,6 +38,8 @@ class WebhookController extends Controller
     }
 
     $eventType = $request->input('eventType');
+        $status = $request->input('data.status'); // ✅ 이 줄 추가
+
     $paymentKey = $request->input('data.paymentKey');
     $orderId = $request->input('data.orderId');
     $payload = $request->all();
@@ -46,6 +48,19 @@ class WebhookController extends Controller
 $payment = Payment::where('order_id', $orderId)->first();
 $service = Service::where('order_id', $orderId)->first(); // 🔥 더 정확하게 매칭
     $user = $payment ? $payment->user : null;
+
+
+    // ✅ 여기에 추가하세요
+if ($eventType === 'PAYMENT_STATUS_CHANGED' && $status === 'CANCELED') {
+    \Log::info("🚨 환불 상태 감지됨: $orderId");
+
+    $service = Service::where('order_id', $orderId)->first();
+    if ($service) {
+        app(\App\Services\ProvisioningService::class)->terminateService($service);
+    }
+}
+
+
 
     // 📝 Webhook 로그 저장
     WebhookLog::create([
