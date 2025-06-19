@@ -19,137 +19,144 @@ use App\Services\TossPaymentService;
 
 class PaymentController extends Controller
 {
-    public function confirmGet(Request $request)
-    {
-        $planId     = $request->plan_id;
-        $period     = (int) $request->get('period', 1);
-        $username   = $request->username;
-        $password   = $request->password;
-        $orderId    = $request->order_id;
-        $paymentKey = $request->paymentKey;
-        $user       = Auth::user();
+public function confirmGet(Request $request)
+{
+    $planId     = $request->plan_id;
+    $period     = (int) $request->get('period', 1);
+    $username   = $request->username;
+    $password   = $request->password;
+    $orderId    = $request->order_id;
+    $paymentKey = $request->paymentKey;
+    $user       = Auth::user();
 
-        $discountRate = match ($period) {
-            3 => 0.02,
-            6 => 0.04,
-            12 => 0.10,
-            24 => 0.20,
-            default => 0,
-        };
+    $discountRate = match ($period) {
+        3 => 0.02,
+        6 => 0.04,
+        12 => 0.10,
+        24 => 0.20,
+        default => 0,
+    };
 
-        $plan = Plan::findOrFail($planId);
-        $totalAmount = round($plan->price * $period * (1 - $discountRate));
+    $plan = Plan::findOrFail($planId);
+    $totalAmount = round($plan->price * $period * (1 - $discountRate));
 
-        $toss = app(TossPaymentService::class);
-        $response = $toss->confirmPayment($paymentKey, $orderId, $totalAmount);
+    $toss = app(TossPaymentService::class);
+    $response = $toss->confirmPayment($paymentKey, $orderId, $totalAmount);
 
-        if (!isset($response['approvedAt'])) {
-            Log::error('❌ Toss 결제 승인 실패', ['response' => $response]);
-            abort(500, '결제 승인 실패');
-        }
-
-        $receiptUrl = $response['receipt']['url'] ?? null;
-
-        if (Payment::where('order_id', $orderId)->exists()) {
-            return view('checkout.confirm', compact('orderId', 'totalAmount', 'plan'));
-        }
-
-        DB::beginTransaction();
-        try {
-            Payment::create([
-                'user_id'     => $user->id,
-                'plan_id'     => $plan->id,
-                'order_id'    => $orderId,
-                'payment_key' => $paymentKey,
-                'amount'      => $totalAmount,
-                'status'      => 'PAID',
-                'approved_at' => now(),
-                'receipt_url' => $receiptUrl,
-                    'service_id'  => $service->id,   // ✅ 반드시 추가!
-            ]);
-
-            $user->update(['plan_id' => $planId]);
-
-            $server = app(WhmServerPoolService::class)->selectAvailableServer($plan->disk_size);
-            if (!$server) {
-                throw new \Exception('WHM 서버 용량 부족');
-            }
-
-            $domain = "$username.hostyle.me";
-            $whm = new WhmApiService($server);
-            $whmResponse = $whm->createAccount($domain, $username, $password, $plan->name, $user->email);
-
-            if (($whmResponse['status'] ?? 0) === 0) {
-                throw new \Exception('WHM 계정 생성 실패 (라이선스 문제 등)');
-            }
-
-            $cloudflare = new CloudflareService();
-            $dnsRecordId = $cloudflare->createDnsRecord($domain, $server->ip_address);
-            if (!$dnsRecordId) {
-                throw new \Exception('Cloudflare DNS 생성 실패');
-            }
-
-            $cpUser = $username;
-            $dbName = "{$cpUser}_db";
-            $dbUser = "{$cpUser}_admin";
-            $dbPassword = $password;
-            $sshPort = 49999;
-            $sshHost = $server->ip_address;
-
-            $commands = [
-                "uapi --user={$cpUser} Mysql create_database name={$dbName} collation=utf8_general_ci",
-                "uapi --user={$cpUser} Mysql create_user name={$dbUser} password={$dbPassword}",
-                "uapi --user={$cpUser} Mysql set_privileges_on_database user={$dbUser} database={$dbName} privileges=ALL",
-            ];
-
-            foreach ($commands as $cmd) {
-                $sshCommand = "ssh -p {$sshPort} root@{$sshHost} '{$cmd}'";
-                $process = Process::fromShellCommandline($sshCommand);
-                $process->run();
-
-                if (!$process->isSuccessful()) {
-                    throw new \Exception("DB 생성 실패: {$cmd} - " . $process->getErrorOutput());
-                }
-            }
-
-            $server->used_disk_capacity = ($server->used_disk_capacity ?? 0) + $plan->disk_size;
-            $server->save();
-
-            Service::create([
-                'user_id'        => $user->id,
-                'plan_id'        => $plan->id,
-                'whm_username'   => $username,
-                'whm_domain'     => $domain,
-                'whm_server_id'  => $server->id,
-                'expired_at'     => now()->addMonths($period),
-                'status'         => 'active',
-                'dns_record_id'  => $dnsRecordId,
-                'whm_password'   => Crypt::encryptString($password),
-                'order_id'       => $orderId,
-            ]);
-
-            DB::commit();
-
-            return view('checkout.confirm', [
-                'orderId'  => $orderId,
-                'amount'   => $totalAmount,
-                'planName' => $plan->name,
-                'domain'   => $domain,
-                'email'    => $user->email,
-                'period'   => $period,
-                'disk'     => $plan->disk_size,
-            ]);
-
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            $toss->cancelPayment($paymentKey, '서버 생성 실패: ' . $e->getMessage());
-
-            Log::error('❌ 결제 성공 후 내부 프로비저닝 실패. Toss 결제 취소 처리됨.', [
-                'orderId' => $orderId,
-                'error'   => $e->getMessage(),
-            ]);
-
-            abort(500, '결제는 되었으나 서버 생성 중 문제가 발생했습니다. 자동 환불 처리되었습니다.');
-        }
+    if (!isset($response['approvedAt'])) {
+        Log::error('❌ Toss 결제 승인 실패', ['response' => $response]);
+        return view('checkout.failed', [
+            'errorMessage' => '결제 승인에 실패했습니다. 다시 시도해 주세요.'
+        ]);
     }
+
+    $receiptUrl = $response['receipt']['url'] ?? null;
+
+    if (Payment::where('order_id', $orderId)->exists()) {
+        return view('checkout.confirm', compact('orderId', 'totalAmount', 'plan'));
+    }
+
+    DB::beginTransaction();
+    try {
+        $server = app(WhmServerPoolService::class)->selectAvailableServer($plan->disk_size);
+        if (!$server) {
+            throw new \Exception('WHM 서버 용량 부족');
+        }
+
+        $domain = "$username.hostyle.me";
+        $whm = new WhmApiService($server);
+        $whmResponse = $whm->createAccount($domain, $username, $password, $plan->name, $user->email);
+
+        if (($whmResponse['status'] ?? 0) === 0) {
+            throw new \Exception('WHM 계정 생성 실패 (라이선스 문제 등)');
+        }
+
+        $cloudflare = new CloudflareService();
+        $dnsRecordId = $cloudflare->createDnsRecord($domain, $server->ip_address);
+        if (!$dnsRecordId) {
+            throw new \Exception('Cloudflare DNS 생성 실패');
+        }
+
+        // 1️⃣ Service 생성 먼저
+        $service = Service::create([
+            'user_id'        => $user->id,
+            'plan_id'        => $plan->id,
+            'whm_username'   => $username,
+            'whm_domain'     => $domain,
+            'whm_server_id'  => $server->id,
+            'expired_at'     => now()->addMonths($period),
+            'status'         => 'active',
+            'dns_record_id'  => $dnsRecordId,
+            'whm_password'   => Crypt::encryptString($password),
+            'order_id'       => $orderId,
+        ]);
+
+        // 2️⃣ Payment 생성 후 service_id 포함
+        Payment::create([
+            'user_id'     => $user->id,
+            'plan_id'     => $plan->id,
+            'order_id'    => $orderId,
+            'payment_key' => $paymentKey,
+            'amount'      => $totalAmount,
+            'status'      => 'PAID',
+            'approved_at' => now(),
+            'receipt_url' => $receiptUrl,
+            'service_id'  => $service->id,
+        ]);
+
+        $user->update(['plan_id' => $planId]);
+
+        // DB 계정 생성
+        $cpUser = $username;
+        $dbName = "{$cpUser}_db";
+        $dbUser = "{$cpUser}_admin";
+        $dbPassword = $password;
+        $sshPort = 49999;
+        $sshHost = $server->ip_address;
+
+        $commands = [
+            "uapi --user={$cpUser} Mysql create_database name={$dbName} collation=utf8_general_ci",
+            "uapi --user={$cpUser} Mysql create_user name={$dbUser} password={$dbPassword}",
+            "uapi --user={$cpUser} Mysql set_privileges_on_database user={$dbUser} database={$dbName} privileges=ALL",
+        ];
+
+        foreach ($commands as $cmd) {
+            $sshCommand = "ssh -p {$sshPort} root@{$sshHost} '{$cmd}'";
+            $process = Process::fromShellCommandline($sshCommand);
+            $process->run();
+
+            if (!$process->isSuccessful()) {
+                throw new \Exception("DB 생성 실패: {$cmd} - " . $process->getErrorOutput());
+            }
+        }
+
+        $server->used_disk_capacity = ($server->used_disk_capacity ?? 0) + $plan->disk_size;
+        $server->save();
+
+        DB::commit();
+
+        return view('checkout.confirm', [
+            'orderId'  => $orderId,
+            'amount'   => $totalAmount,
+            'planName' => $plan->name,
+            'domain'   => $domain,
+            'email'    => $user->email,
+            'period'   => $period,
+            'disk'     => $plan->disk_size,
+        ]);
+
+    } catch (\Throwable $e) {
+        DB::rollBack();
+        $toss->cancelPayment($paymentKey, '서버 생성 실패: ' . $e->getMessage());
+
+        Log::error('❌ 결제 성공 후 내부 프로비저닝 실패. Toss 결제 취소 처리됨.', [
+            'orderId' => $orderId,
+            'error'   => $e->getMessage(),
+        ]);
+
+        return view('checkout.failed', [
+            'errorMessage' => '서버 생성 중 문제가 발생했습니다. 결제는 자동 환불되었습니다.',
+        ]);
+    }
+}
 }
