@@ -1,6 +1,39 @@
 
 ## 🔄 최근 작업 내역
 
+
+📌 SaaS 시스템 기능 개선 내역 (2025-06-19 기준)
+✅ 결제 완료 후 자동 프로비저닝 기능 구현
+연동 흐름:
+
+Toss Webhook → 결제 완료 확인
+
+WHM 계정 자동 생성 (API)
+
+Cloudflare A레코드 자동 생성 (DNS 연결)
+
+SSH를 통해 사용자 전용 MySQL DB 및 사용자 생성
+
+모든 작업이 완료되면 Payment, Service 테이블에 상세 정보 저장
+
+DB 저장 구조 개선:
+
+payments 테이블: order_id, payment_key, amount, status, approved_at, service_id 추가 저장 로직
+
+services 테이블: whm_username, whm_password, whm_server_id, whm_domain, dns_record_id, order_id 저장 가능하도록 fillable 필드 업데이트
+
+cPanel 바로가기 기능:
+
+createCpanelSession 메서드에서 create_user_session API를 사용하여 직접 접속 가능한 URL 생성 가능
+
+✅ 기타
+디버깅 로그 정교화 (📌 로그 태그 사용)
+
+실패 시 상세한 에러 저장: error_logs 테이블을 통한 추적 가능
+
+Cloudflare 연동 시 proxied: true 설정으로 실 운영에 맞춘 구성
+
+
 2025-06-19 새벽
 
 🎯 기능 구현 내용

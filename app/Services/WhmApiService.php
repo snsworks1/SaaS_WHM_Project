@@ -3,7 +3,11 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
 use App\Models\WhmServer;
+use App\Models\ErrorLog;
+
 
 class WhmApiService
 {
@@ -18,6 +22,20 @@ class WhmApiService
         $this->token = $server->api_token;
         $this->username = $server->username;
                 $this->server = $server;
+    }
+
+
+     public function callApi(string $endpoint, array $params = [])
+    {
+        $response = Http::withHeaders([
+            'Authorization' => 'whm ' . $this->username . ':' . $this->token,
+        ])->withOptions([
+            'verify' => false,
+        ])->get("https://{$this->server->api_hostname}:2087/json-api/{$endpoint}", array_merge([
+            'api.version' => 1,
+        ], $params));
+
+        return $response->json();
     }
 
     // WhmApiService 내부 수정
@@ -47,16 +65,47 @@ class WhmApiService
     
 
 
-    public function createAccount($domain, $username, $password, $package, $contactEmail)
+public function createAccount($domain, $username, $password, $package, $email)
     {
-        return $this->request('createacct', [
+        $params = [
             'username' => $username,
             'domain' => $domain,
             'password' => $password,
             'plan' => $package,
-            'contactemail' => $contactEmail
+            'contactemail' => $email,
+        ];
+
+        $response = $this->request('createacct', $params);
+
+        Log::info('📌 WHM raw response', ['response_raw' => $response]);
+
+        $result = $response['result'][0] ?? null;
+
+        if ($result && isset($result['status']) && $result['status'] == 1) {
+            return [
+                'status' => 1,
+                'message' => $result['statusmsg'] ?? '성공',
+            ];
+        }
+
+        ErrorLog::create([
+            'level' => 'high',
+            'type' => '연동오류',
+            'title' => 'WHM 계정 생성 실패 - 라이선스 문제 등',
+            'file_path' => 'app/Services/WhmApiService.php',
+            'occurred_at' => now(),
+            'server_id' => $this->server->id ?? null,
+            'whm_username' => $username,
         ]);
+
+        return [
+            'status' => 0,
+            'message' => $result['statusmsg'] ?? '응답 파싱 실패 또는 계정 생성 실패',
+            'raw' => $response
+        ];
     }
+
+
     public function accountExists($username)
 {
     $result = $this->request('accountsummary', ['user' => $username]);
@@ -152,9 +201,6 @@ public function changePackage($username, $newPackage)
 
 public function createCpanelSession($cpUsername)
 {
-
-    # WHM (루트 계정) 권한으로 특정 사용자(cPanel 계정)에 대해 로그인 세션을 발급하고,
-    # cPanel UI로 바로 들어갈 수 있는 URL을 반환합니다.
     $response = Http::withHeaders([
         'Authorization' => 'whm ' . $this->username . ':' . $this->token,
     ])->withOptions([
@@ -167,16 +213,13 @@ public function createCpanelSession($cpUsername)
 
     $data = $response->json();
 
-    if (isset($response['data']['url'])) {
-        $url = $response['data']['url'];
-
-        // ✅ 도메인으로 치환 (임시 우회용)
+    if (isset($data['data']['url'])) {
+        $url = $data['data']['url'];
         return str_replace($this->server->ip_address, $this->server->api_hostname, $url);
     }
 
     \Log::error('❌ create_user_session 실패', ['response' => $data]);
     return null;
 }
-
 
 }

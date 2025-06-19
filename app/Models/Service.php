@@ -16,7 +16,9 @@ class Service extends Model
     'expired_at',
     'status',
     'dns_record_id',       // 이미 추가된 필드
-    'whm_password'         // ✅ 여기에 추가해야 저장됨
+    'whm_password',         // ✅ 여기에 추가해야 저장됨
+            'order_id',    // ✅ 이거 반드시 추가해야 합니다
+
 ];
     protected $dates = [
         'started_at',
