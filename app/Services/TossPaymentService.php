@@ -19,13 +19,34 @@ class TossPaymentService
         return $response->json();
     }
 
-    public function cancelPayment($paymentKey, $reason = 'User Requested')
-    {
-        return Http::withBasicAuth(config('services.toss.secret_key'), '')
-            ->post("{$this->baseUrl}/payments/{$paymentKey}/cancel", [
-                'cancelReason' => $reason,
-            ])->json();
+    public function cancelPayment($paymentKey, string $reason = 'User Requested', int $amount)
+{
+ \Log::info('📤 Toss 환불 함수 호출됨', [
+        'paymentKey' => $paymentKey,
+        'reason' => $reason,
+        'amount' => $amount,
+    ]);
+
+    
+    $response = Http::withBasicAuth(config('services.toss.secret_key'), '')
+        ->post("{$this->baseUrl}/payments/{$paymentKey}/cancel", [
+            'cancelReason' => $reason,
+            'cancelAmount' => $amount,
+        ]);
+
+    if ($response->successful()) {
+        \Log::info('✅ Toss 환불 성공', ['response' => $response->json()]);
+        return $response->json();
+    } else {
+        \Log::error('❌ Toss 환불 실패', [
+            'status' => $response->status(),
+            'body' => $response->body(),
+            'paymentKey' => $paymentKey,
+            'amount' => $amount,
+        ]);
+        return ['error' => 'cancel_failed'];
     }
+}
 
         public function getReceiptByOrderId(string $orderId): ?array
 {

@@ -77,7 +77,7 @@ class Service extends Model
 
 public function payment()
 {
-    return $this->hasOne(\App\Models\Payment::class, 'order_id', 'order_id');
+    return $this->hasOne(Payment::class);
 }
 
 

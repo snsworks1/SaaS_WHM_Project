@@ -117,29 +117,48 @@ public function refundForm($id)
     $calc = RefundCalculator::calculate($service);
 
     return view('services.refund', array_merge($calc, [
-        'service' => $service,
-        'plan'    => $service->plan,
-    ]));
+    'service' => $service,
+    'plan'    => $service->plan,
+    'isEligible' => $calc['isEligible'], // ✅ 여기가 핵심!
+]));
 }
 
 public function processRefund(Request $request, $id)
 {
-        \Log::info('🟠 환불 요청 접수됨', ['id' => $id, 'reason' => $request->reason]);
-    $service = Service::with(['plan', 'payment'])->findOrFail($id);
-    $calc = RefundCalculator::calculate($service);
+    \Log::info('🟠 환불 요청 접수됨', ['id' => $id, 'reason' => $request->reason]);
 
-    if ($service->plan->price == 0 || !$calc['isEligible']) {
+    $service = Service::with(['plan', 'payment'])->findOrFail($id);
+    \Log::info('🧾 서비스 로드 완료', ['service_id' => $service->id]);
+
+    $calc = RefundCalculator::calculate($service);
+    \Log::info('🧮 환불 계산 완료', ['calc' => $calc]);
+
+if ($service->plan->price == 0 || (!$calc['isEligible'] && $calc['durationDays'] <= 31)) {
+        \Log::warning('⛔️ 환불 불가 조건');
         return back()->with('error', '환불 조건을 만족하지 않습니다.');
     }
 
-    $toss = app(\App\Services\TossPaymentService::class);
-    $result = $toss->cancelPayment($service->payment->payment_key, $request->reason ?? '사용자 환불 요청', $calc['refundable']);
+    \Log::info('🚀 Toss 환불 시작 시도');
 
-    if (isset($result['status']) && $result['status'] === 'CANCELED') {
-        $service->payment->update(['status' => 'CANCELED']);
-        $service->update(['status' => 'canceled']);
-        return back()->with('success', '환불이 완료되었습니다.');
-    }
+    $toss = app(\App\Services\TossPaymentService::class);
+    $result = $toss->cancelPayment(
+        $service->payment->payment_key,
+        $request->reason ?? '사용자 환불 요청',
+        $calc['refundable']
+    );
+
+    \Log::info('📩 Toss 환불 응답 수신', ['result' => $result]);
+
+    $service->payment->update([
+        'status' => 'CANCELED',
+        'refund_reason' => $request->reason ?? '사용자 환불 요청',
+    ]);
+
+    if (isset($result['status']) && in_array($result['status'], ['CANCELED', 'PARTIAL_CANCELED'])) {
+    $service->payment->update(['status' => $result['status']]); // 실제 상태 저장
+    $service->update(['status' => 'canceled']);
+    return back()->with('success', '환불이 완료되었습니다.');
+}
 
     return back()->with('error', '환불 처리에 실패했습니다.');
 }
