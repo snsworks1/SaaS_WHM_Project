@@ -79,7 +79,10 @@ public function payment()
 {
     return $this->hasOne(\App\Models\Payment::class, 'order_id', 'order_id');
 }
-
+public function payments()
+{
+    return $this->hasMany(\App\Models\Payment::class, 'service_id');
+}
 
 
 }

@@ -84,7 +84,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/services/{id}/upgrade-complete', [PlanUpgradeController::class, 'upgradeComplete'])->name('services.upgradeComplete');
 });
 
-Route::get('/services/{id}/upgrade-complete', [UserServiceController::class, 'upgradeComplete'])->name('services.upgradeComplete');
+Route::get('/services/{id}/upgrade/success', [PlanUpgradeController::class, 'confirmTossPayment'])->name('upgrade.payment.success');
+Route::get('/services/{id}/upgrade/fail', function ($id) {
+    return view('services.upgrade-fail', ['id' => $id]);
+})->name('upgrade.payment.fail');
+
+
 
 
 Route::get('/checkout/confirm', [\App\Http\Controllers\PaymentController::class, 'confirmGet']);
