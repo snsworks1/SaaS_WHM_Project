@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\WhmServer;
 use Illuminate\Http\Request;
 use App\Services\WhmApiService;
+use Illuminate\Support\Str;
 
 class WhmServerController extends Controller
 {
@@ -47,21 +48,35 @@ class WhmServerController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'ip_address' => 'required|ip',  // ✅ IP 주소 추가
-            'api_url' => 'required',
-            'api_token' => 'required',
-            'username' => 'required',
-        ]);
+    'name' => 'required',
+    'ip_address' => 'required|ip',
+    'api_url' => 'required|url',
+    'api_token' => 'required',
+    'username' => 'required',
+    'total_disk_capacity' => 'required|numeric|min:1',
+]);
 
-        WhmServer::create([
-            'name' => $request->name,
-            'ip_address' => $request->ip_address,  // ✅ 저장 추가
-            'api_url' => $request->api_url,
-            'api_token' => $request->api_token,
-            'username' => $request->username,
-            'status' => 'active',
-        ]);
+$server = WhmServer::create([
+    'name' => $request->name,
+    'ip_address' => $request->ip_address,
+    'api_url' => $request->api_url,
+    'api_token' => $request->api_token,
+    'username' => $request->username,
+    'total_disk_capacity' => $request->total_disk_capacity,
+    'status' => 'active',
+    'active' => $request->active ?? 1,
+]);
+
+$plans = \App\Models\Plan::all();
+$whmApi = new WhmApiService($server);
+
+foreach ($plans as $plan) {
+    $packageName = $plan->name;
+    $diskSize = max(1, $plan->disk_size) ?? 1000;
+
+    $whmApi->createPackage($packageName, $diskSize, $plan);
+}
+
 
         return redirect()->route('admin.whm-servers.index')->with('success', 'WHM 서버 추가됨.');
     }
@@ -74,20 +89,23 @@ class WhmServerController extends Controller
     public function update(Request $request, WhmServer $whmServer)
     {
         $request->validate([
-            'name' => 'required',
-            'ip_address' => 'required|ip',  // ✅ 수정시에도 필수
-            'api_url' => 'required',
-            'api_token' => 'required',
-            'username' => 'required',
-        ]);
+    'name' => 'required',
+    'ip_address' => 'required|ip',
+    'api_url' => 'required|url',
+    'api_token' => 'required',
+    'username' => 'required',
+    'total_disk_capacity' => 'required|numeric|min:1',
+]);
 
         $whmServer->update([
-            'name' => $request->name,
-            'ip_address' => $request->ip_address,  // ✅ 저장 추가
-            'api_url' => $request->api_url,
-            'api_token' => $request->api_token,
-            'username' => $request->username,
-        ]);
+    'name' => $request->name,
+    'ip_address' => $request->ip_address,
+    'api_url' => $request->api_url,
+    'api_token' => $request->api_token,
+    'username' => $request->username,
+    'total_disk_capacity' => $request->total_disk_capacity,
+    'active' => $request->active ?? 1,
+]);
 
         return redirect()->route('admin.whm-servers.index')->with('success', '수정 완료.');
     }
