@@ -27,6 +27,9 @@
                                 <h3 class="font-bold text-lg mb-2">{{ $service->plan->name }}</h3>
                     <p class="text-gray-700 mb-1"><strong>도메인:</strong> {{ $service->whm_domain }}</p>
                     <p class="text-gray-700 mb-1"><strong>WHM 계정:</strong> {{ $service->whm_username }}</p>
+                    <div class="mt-2 text-sm text-gray-600">
+    만료일: <span class="font-medium text-gray-800">{{ $service->expired_at->format('Y년 m월 d일') }}</span>
+</div>
                     <p class="text-gray-500 text-sm">생성: {{ $service->created_at->format('Y-m-d H:i') }}</p>
 
                     <!-- ✅ 버튼 영역 추가 -->

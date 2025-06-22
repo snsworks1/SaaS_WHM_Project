@@ -2,6 +2,69 @@
 ## 🔄 최근 작업 내역
 
 
+✅ [2025-06-22] 관리자 통계 - 연장 결제 리스트 기능 추가
+📊 핵심 기능
+
+    이번 달 서비스 연장 결제 내역을 관리자 통계 탭에서 확인 가능
+
+    연장일, 만료일, 남은 일수 등 상세 정보 표시
+
+    연장 결제 관련 정보는 payments, service_extensions, services 테이블을 조인하여 구성
+
+🔍 표시 항목
+
+    유저명 (user.name)
+
+    서비스 도메인 (whm_domain)
+
+    플랜명 (plan.name)
+
+    연장 개월 수 (period)
+
+    결제 금액 (amount)
+
+    연장일 (paid_at)
+
+    만료일 (service.expired_at)
+
+    남은 일수 (D-n 형식, expired_at - now() 계산)
+
+🔁 모델 연관 관계 수정 및 보완
+
+    Payment 모델에 extension() 관계 추가
+    → hasOne(ServiceExtension::class, 'payment_id', 'payment_key')
+
+    ServiceExtension 모델에 service(), payment() 관계 추가
+
+    Service 모델에 getDaysLeftAttribute() 추가로 남은 일수 계산
+
+    Service 모델 $fillable에 whm_domain 필드 추가
+
+    뷰에 service.whm_domain ?? '도메인 없음' 처리로 null 방지
+
+🖥 관리자 화면 개선
+
+    /admin/stats?tab=renewals 경로에 연장 결제 리스트 테이블 추가
+
+    날짜 포맷 및 남은 일수 소수점 제거
+
+    테이블 레이아웃 개선 및 도메인 출력 오류 수정
+
+🗂 변경된 주요 파일
+
+    resources/views/admin/stats/partials/renewals.blade.php
+
+    App\Models\Payment
+
+    App\Models\ServiceExtension
+
+    App\Models\Service
+
+    App\Http\Controllers\Admin\AdminStatsController.php
+
+
+
+
 ## ✅ [2025-06-22] 플랜 업그레이드 기능 완성
 
 ### 🔧 핵심 기능

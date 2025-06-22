@@ -1,155 +1,124 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\PlansController;
-use App\Http\Controllers\Admin\ServiceController;
-use App\Http\Controllers\UserServiceController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\ServiceSettingsController;
-use App\Http\Controllers\NoticeController;
-use App\Http\Controllers\PatchnoteController;
-use App\Http\Controllers\Admin\PatchnoteController as AdminPatchnoteController;
-use App\Http\Controllers\Admin\NoticeController as AdminNoticeController;
-use App\Http\Controllers\Admin\UploadController;
+use App\Http\Controllers\{
+    PlansController,
+    PaymentController,
+    PlanUpgradeController,
+    ServiceSettingsController,
+    UserServiceController,
+    ServiceExtensionController,
+    NoticeController,
+    PatchnoteController,
+    DashboardController as UserDashboardController
+};
 use App\Models\Notice;
-use App\Http\Controllers\PlanUpgradeController;
-use App\Http\Controllers\Admin\AdminLogController;
 
+// 관리자 컨트롤러
+use App\Http\Controllers\Admin\{
+    DashboardController as AdminDashboardController,
+    PlanController,
+    UserController,
+    ServiceController,
+    WhmServerController,
+    UploadController,
+    NoticeController as AdminNoticeController,
+    PatchnoteController as AdminPatchnoteController,
+    AdminLogController,
+    AdminStatsController
+};
 
+// 🚪 기본 라우트
+Route::get('/', fn() => view('welcome'));
 
+// ✅ 인증된 사용자 그룹
+Route::middleware(['auth', 'verified'])->group(function () {
 
-Route::get('/', function () {
-    return view('welcome');
-});
+    // 📌 사용자 대시보드
+    Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth'])
-    ->name('dashboard');
-
-
-
-
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-});
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-});
-
-
-Route::middleware(['auth'])->group(function () {
+    // 📦 플랜 관련
     Route::get('/plans', [PlansController::class, 'index'])->name('plans.index');
     Route::post('/plans/select', [PlansController::class, 'select'])->name('plans.select');
     Route::post('/plans/check-username', [PlansController::class, 'checkUsername'])->name('plans.checkUsername');
-});
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
-
-    Route::resource('plans', \App\Http\Controllers\Admin\PlanController::class);
-    Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['create', 'store', 'destroy']);
-    Route::resource('service', \App\Http\Controllers\Admin\ServiceController::class);
-    
-    Route::resource('whm-servers', \App\Http\Controllers\Admin\WhmServerController::class);
-
-});
-
-Route::post('/check-whm-username', [\App\Http\Controllers\Api\ProvisioningController::class, 'checkWhmUsername'])->name('check-whm-username');
-
-Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
-    
-    Route::get('/services', [ServiceController::class, 'index'])->name('admin.services.index');
-    Route::post('/services/{id}/extend', [ServiceController::class, 'extend'])->name('admin.services.extend');
-    Route::get('/services/{id}/edit', [ServiceController::class, 'edit'])->name('admin.services.edit');
-    Route::post('/services/{id}/update', [ServiceController::class, 'update'])->name('admin.services.update');
-    Route::delete('/services/{id}', [ServiceController::class, 'destroy'])->name('admin.services.destroy');
-    
-});
-
-
-Route::middleware(['auth'])->group(function () {
+    // 💳 플랜 업그레이드
     Route::get('/services/{id}/change-plan', [PlanUpgradeController::class, 'showChangePlan'])->name('services.changePlan');
     Route::post('/services/{id}/confirm-upgrade', [PlanUpgradeController::class, 'confirmUpgrade'])->name('services.confirmUpgrade');
-    Route::post('/services/{id}/process-upgrade', [PlanUpgradeController::class, 'processUpgrade'])->name('services.processUpgrade');
     Route::get('/services/{id}/upgrade-complete', [PlanUpgradeController::class, 'upgradeComplete'])->name('services.upgradeComplete');
-});
 
-Route::get('/services/{id}/upgrade/success', [PlanUpgradeController::class, 'confirmTossPayment'])->name('upgrade.payment.success');
-Route::get('/services/{id}/upgrade/fail', function ($id) {
-    return view('services.upgrade-fail', ['id' => $id]);
-})->name('upgrade.payment.fail');
+    // ⏳ 서비스 연장
+    Route::post('/services/{id}/extend/request', [ServiceExtensionController::class, 'request'])->name('services.extend.request');
+    Route::get('/services/{id}/extend/confirm', [ServiceExtensionController::class, 'confirm'])->name('services.extend.confirm');
+    Route::get('/services/{id}/extend/fail', fn($id) => view('services.extend-fail', ['id' => $id]))->name('services.extend.fail');
+    Route::get('/services/{id}/extend/complete', [ServiceExtensionController::class, 'complete'])->name('services.extend.complete');
+    
+    // 🔁 환불
+    Route::get('/services/{id}/refund', [ServiceSettingsController::class, 'refundForm'])->name('services.refundForm');
+    Route::post('/services/{id}/process-refund', [ServiceSettingsController::class, 'processRefund'])->name('services.processRefund');
 
+    // ⚙ 서비스 설정
+    Route::get('/services/{service}/settings', [ServiceSettingsController::class, 'settings'])->name('services.settings');
+    Route::post('/services/{service}/install-wordpress', [ServiceSettingsController::class, 'installWordPress'])->name('services.installWordPress');
+    Route::get('/services/{id}/check-wp', [ServiceSettingsController::class, 'checkWordPress'])->name('services.checkWp');
 
-
-
-Route::get('/checkout/confirm', [\App\Http\Controllers\PaymentController::class, 'confirmGet']);
-
-Route::get('/checkout/confirm', [PaymentController::class, 'confirmGet']);
-Route::get('/checkout/fail', function () {
-    return view('checkout.fail');
-});
-
-Route::middleware(['auth'])->group(function () { #대시보드->결제내역
+    // 🧾 대시보드 결제내역
     Route::get('/dashboard/payments', [\App\Http\Controllers\Dashboard\PaymentController::class, 'index'])->name('dashboard.payments');
 });
 
+// ✅ Toss 결제 콜백용 (인증 불필요)
+Route::get('/checkout/confirm', [PaymentController::class, 'confirmGet']);
+Route::get('/checkout/fail', fn() => view('checkout.fail'));
 
+// ✅ 업그레이드 결제 콜백
+Route::get('/services/{id}/upgrade/success', [PlanUpgradeController::class, 'confirmTossPayment'])->name('upgrade.payment.success');
+Route::get('/services/{id}/upgrade/fail', fn($id) => view('services.upgrade-fail', ['id' => $id]))->name('upgrade.payment.fail');
 
-# 대시보드 고객사 서버 설정버튼 라우트
-Route::middleware(['auth'])->group(function () {
-    Route::get('/services/{service}/settings', [ServiceSettingsController::class, 'settings'])
-        ->name('services.settings');
-
-    Route::post('/services/{service}/install-wordpress', [ServiceSettingsController::class, 'installWordPress'])
-        ->name('services.installWordPress');
-
-});
-
-Route::get('/services/{id}/check-wp', [ServiceSettingsController::class, 'checkWordPress'])
-    ->middleware('auth')
-    ->name('services.checkWp');
-
-Route::get('/services/{id}/cpanel-url', [UserServiceController::class, 'getCpanelUrl'])
-    ->name('services.getCpanelUrl');
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/services/{id}/refund', [ServiceSettingsController::class, 'refundForm'])->name('services.refundForm');
-    
-});
-Route::post('/services/{id}/process-refund', [ServiceSettingsController::class, 'processRefund'])
-    ->name('services.processRefund')
-    ->middleware('auth');
-
+// ✅ 공지사항 (모든 사용자 접근 가능)
 Route::get('/notices', [NoticeController::class, 'index'])->name('notices.index');
 Route::get('/notices/{id}', [NoticeController::class, 'show'])->name('notices.show');
+Route::get('/api/notices/{id}', fn($id) => Notice::findOrFail($id));
 
-Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () {
-   
-    // 공지사항
+// ✅ 사용자용 서비스 기능
+Route::get('/services/{id}/cpanel-url', [UserServiceController::class, 'getCpanelUrl'])->name('services.getCpanelUrl');
+
+// ✅ 관리자 전용 라우트
+Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {
+
+    // 📊 대시보드
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+    // 🧑‍💼 관리기능
+    Route::resource('plans', PlanController::class);
+    Route::resource('users', UserController::class)->except(['create', 'store', 'destroy']);
+    Route::resource('service', ServiceController::class);
+    Route::resource('whm-servers', WhmServerController::class);
+
+    // 🛠 개별 서비스 연장/수정
+    Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
+    Route::post('/services/{id}/extend', [ServiceController::class, 'extend'])->name('services.extend');
+    Route::get('/services/{id}/edit', [ServiceController::class, 'edit'])->name('services.edit');
+    Route::post('/services/{id}/update', [ServiceController::class, 'update'])->name('services.update');
+    Route::delete('/services/{id}', [ServiceController::class, 'destroy'])->name('services.destroy');
+
+    // 📢 공지사항 관리
     Route::resource('notices', AdminNoticeController::class);
 
-    // Editor.js 이미지 업로드
+    // 📝 패치노트 관리 (필요시 주석 해제)
+    // Route::resource('patchnotes', AdminPatchnoteController::class);
+
+    // 🖼 이미지 업로드 (에디터용)
     Route::post('/uploads/editorjs', [UploadController::class, 'editorjs'])->name('editorjs.upload');
-});
 
-Route::get('/api/notices/{id}', function ($id) {
-    return Notice::findOrFail($id);
-});
-
-Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {
+    // 🪵 에러 로그 모니터링
     Route::get('/error-logs', [AdminLogController::class, 'index'])->name('error-logs.index');
     Route::get('/error-logs/json', [AdminLogController::class, 'json'])->name('error-logs.json');
     Route::post('/error-logs/{id}/toggle', [AdminLogController::class, 'toggle'])->name('error-logs.toggle');
+    Route::get('/error-logs/export', [AdminLogController::class, 'export'])->name('errorLogs.export');
 
-    Route::get('/error-logs/export', [AdminLogController::class, 'export'])->name('admin.errorLogs.export');
+    // 📈 통계 대시보드
+    Route::get('/stats', [AdminStatsController::class, 'index'])->name('stats.index');
 });
+
+// ✅ API/비동기 체크
+Route::post('/check-whm-username', [\App\Http\Controllers\Api\ProvisioningController::class, 'checkWhmUsername'])->name('check-whm-username');

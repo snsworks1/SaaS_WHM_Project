@@ -30,5 +30,10 @@ class Payment extends Model
 {
     return $this->belongsTo(Service::class);
 }
-    
+public function extension()
+{
+    return $this->hasOne(\App\Models\ServiceExtension::class, 'payment_id', 'payment_key');    
+
+}
+
 }

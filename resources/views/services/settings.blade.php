@@ -26,6 +26,66 @@
         <p><span class="font-semibold">DB 비밀번호:</span> <span class="text-gray-500">(WHM 계정 비밀번호와 동일 - 보안상 비공개)</span></p>
     </div>
 </div>
+
+    <hr>
+
+
+            @php
+    $basePrice = $service->plan->price; // 예: 10000
+    $periods = [
+        1 => ['label' => '1개월', 'discount' => 0],
+        3 => ['label' => '3개월', 'discount' => 2],
+        6 => ['label' => '6개월', 'discount' => 4],
+        12 => ['label' => '12개월', 'discount' => 10],
+    ];
+@endphp
+
+<h3 class="text-lg font-bold mt-8">⏳ 서비스 연장</h3>
+
+<!-- 현재 만료일 표시 -->
+<div class="mt-2 text-sm text-gray-600">
+    현재 만료일: <span class="font-medium text-gray-800">{{ $service->expired_at->format('Y년 m월 d일') }}</span>
+</div>
+
+<form method="POST" action="{{ route('services.extend.request', $service->id) }}" class="space-y-4 mt-4">
+    @csrf
+
+    <label class="block text-sm font-medium text-gray-700">연장할 기간</label>
+    <select name="period" class="w-full border rounded p-2" onchange="updatePrice()">
+        @foreach ($periods as $months => $info)
+            @php
+                $discountRate = (100 - $info['discount']) / 100;
+                $finalPrice = floor($basePrice * $months * $discountRate / 10) * 10;
+            @endphp
+            <option value="{{ $months }}" data-price="{{ $finalPrice }}">
+                {{ $info['label'] }} (₩{{ number_format($finalPrice) }} @if($info['discount']) / {{ $info['discount'] }}% 할인 @endif)
+            </option>
+        @endforeach
+    </select>
+
+    <div id="finalAmount" class="text-sm text-gray-600">
+        결제 금액: ₩<span id="amountPreview">{{ number_format($basePrice) }}</span>
+    </div>
+
+    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white py-2 w-full rounded">
+        💳 결제하고 연장하기
+    </button>
+</form>
+
+<script>
+    function updatePrice() {
+        const select = document.querySelector('select[name="period"]');
+        const selectedOption = select.options[select.selectedIndex];
+        const price = selectedOption.getAttribute('data-price');
+        document.getElementById('amountPreview').innerText = parseInt(price).toLocaleString();
+    }
+
+    document.addEventListener('DOMContentLoaded', updatePrice);
+</script>
+
+
+
+
             <hr>
             <h3 class="text-lg font-bold">워드프레스 자동 설치</h3>
 

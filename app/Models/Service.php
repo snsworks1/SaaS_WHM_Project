@@ -29,6 +29,8 @@ class Service extends Model
         'started_at' => 'date',
         'expired_at' => 'date',
     ];
+
+    
     
 
     // 서비스 → 유저 연결

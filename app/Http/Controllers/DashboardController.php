@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Service;
 use App\Models\Notice;
 
+use Illuminate\Support\Facades\Auth;
+
 class DashboardController extends Controller
 {
     public function index()

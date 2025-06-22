@@ -31,6 +31,11 @@
             <a href="{{ route('admin.error-logs.index') }}" class="flex items-center px-4 py-2 text-gray-600 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700">
     에러 모니터링
 </a>
+
+    <a href="{{ route('admin.stats.index') }}" class="block px-4 py-2 hover:bg-gray-100">
+        통계 대시보드
+    </a>
+
         
             <a href="{{ route('admin.notices.index') }}" class="flex items-center px-4 py-2 text-gray-600 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700">
                 공지사항
