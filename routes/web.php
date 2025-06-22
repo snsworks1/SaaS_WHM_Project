@@ -14,7 +14,7 @@ use App\Http\Controllers\Admin\NoticeController as AdminNoticeController;
 use App\Http\Controllers\Admin\UploadController;
 use App\Models\Notice;
 use App\Http\Controllers\PlanUpgradeController;
-
+use App\Http\Controllers\Admin\AdminLogController;
 
 
 
@@ -144,4 +144,12 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
 
 Route::get('/api/notices/{id}', function ($id) {
     return Notice::findOrFail($id);
+});
+
+Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {
+    Route::get('/error-logs', [AdminLogController::class, 'index'])->name('error-logs.index');
+    Route::get('/error-logs/json', [AdminLogController::class, 'json'])->name('error-logs.json');
+    Route::post('/error-logs/{id}/toggle', [AdminLogController::class, 'toggle'])->name('error-logs.toggle');
+
+    Route::get('/error-logs/export', [AdminLogController::class, 'export'])->name('admin.errorLogs.export');
 });

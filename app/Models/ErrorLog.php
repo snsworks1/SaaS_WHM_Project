@@ -18,4 +18,11 @@ class ErrorLog extends Model
     ];
 
     protected $dates = ['occurred_at', 'resolved_at'];
+
+        protected $table = 'error_logs';
+
+    protected $casts = [
+        'occurred_at' => 'datetime',
+        'resolved' => 'boolean',
+    ];
 }
