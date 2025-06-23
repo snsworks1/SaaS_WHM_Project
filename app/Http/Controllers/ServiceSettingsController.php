@@ -124,6 +124,9 @@ public function refundForm($id)
     'service' => $service,
     'plan'    => $service->plan,
     'isEligible' => $calc['isEligible'], // ✅ 여기가 핵심!
+    'calc' => $calc, // ✅ 요거 추가해야 에러 안남!
+    
+    
 ]));
 }
 

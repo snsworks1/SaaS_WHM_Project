@@ -74,7 +74,7 @@
 
             <td class="px-4 py-2">{{ number_format($payment->amount) }}원</td>
             <td class="px-4 py-2">
-                @if ($payment->status === 'PAID')
+                @if ($payment->status === 'PAID' || $payment->status === 'paid')
                     <span class="text-green-600 font-semibold">결제완료</span>
                 @elseif ($payment->status === 'CANCELED')
                     <span class="text-gray-600 font-semibold">환불</span>

@@ -44,6 +44,8 @@ class PaymentController extends Controller
         $toss = app(TossPaymentService::class);
         $response = $toss->confirmPayment($paymentKey, $orderId, $totalAmount);
 
+        $receiptUrl = $response['receipt']['url'] ?? null;
+
         if (!isset($response['approvedAt'])) {
             Log::error('❌ Toss 결제 승인 실패', ['response' => $response]);
             return view('checkout.failed', [
@@ -112,6 +114,7 @@ class PaymentController extends Controller
                 'approved_at' => now(),
                 'receipt_url' => $receiptUrl,
                 'service_id'  => $service->id,
+                'start_at'    => now(), // ✅ 신규 결제는 approved_at과 동일
             ]);
 
             $user->update(['plan_id' => $planId]);

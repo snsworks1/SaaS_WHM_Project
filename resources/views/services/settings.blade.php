@@ -1,104 +1,121 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">서비스 설정 - {{ $service->whm_domain }}</h2>
+        <h2 class="text-2xl font-semibold text-gray-800">⚙️ 서비스 설정</h2>
     </x-slot>
 
-    <div class="max-w-4xl mx-auto py-8">
-        <div class="bg-white rounded-xl shadow p-6 space-y-6">
-            <p><strong>WHM 계정:</strong> {{ $service->whm_username }}</p>
-            <p><strong>도메인:</strong> {{ $service->whm_domain }}</p>
+    <div class="max-w-5xl mx-auto py-10 px-4 sm:px-6 lg:px-8" x-data="{ tab: 'db' }">
+        <div class="bg-white shadow rounded-xl p-6 space-y-6">
+
+            <!-- 기본 정보 -->
+            <div class="space-y-1 text-gray-700 text-sm">
+                <p><span class="font-semibold text-gray-800">WHM 계정:</span> {{ $service->whm_username }}</p>
+                <p><span class="font-semibold text-gray-800">도메인:</span> {{ $service->whm_domain }}</p>
+            </div>
+
+            <!-- 탭 메뉴 -->
+            <div class="flex flex-wrap gap-2 border-b pb-2">
+                @php
+                    $tabs = [
+                        'db' => '데이터베이스 정보',
+                        'password' => 'cPanel 비밀번호 변경',
+                        'extend' => '서비스 연장',
+                        'wordpress' => '워드프레스 설치',
+                        'theme' => '테마 관리',
+                        'refund' => '환불 요청',
+                    ];
+                @endphp
+
+                @foreach ($tabs as $key => $label)
+                    <button
+                        class="px-4 py-1.5 text-sm rounded-t-md font-medium focus:outline-none transition"
+                        :class="tab === '{{ $key }}'
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'text-gray-600 hover:text-blue-500'"
+                        @click="tab = '{{ $key }}'">
+                        {{ $label }}
+                    </button>
+                @endforeach
+            </div>
+
+            <!-- 탭 콘텐츠 -->
+            <div class="pt-4">
+
+                <!-- DB 정보 -->
+                <div x-show="tab === 'db'" class="text-sm text-gray-700 space-y-1">
+                    <h3 class="font-semibold text-gray-800 mb-2">데이터베이스 정보</h3>
+                    <p><span class="font-medium">DB 이름:</span> {{ $service->whm_username }}_db</p>
+                    <p><span class="font-medium">DB 유저:</span> {{ $service->whm_username }}_admin</p>
+                    <p><span class="font-medium">DB 비밀번호:</span> (WHM 계정 비밀번호와 동일)</p>
+                </div>
+
+                <!-- 비밀번호 변경 -->
+                <div x-show="tab === 'password'" class="text-sm">
+                    <h3 class="font-semibold text-gray-800 mb-2">cPanel 비밀번호 변경</h3>
+                    <form method="POST" action="{{ route('services.updatePassword', $service->id) }}" class="space-y-4">
+                        @csrf
+                        <label class="block text-sm font-medium text-gray-700">새 비밀번호</label>
+                        <input type="password" name="new_password" required minlength="8"
+                            class="w-full border border-gray-300 rounded p-2 focus:ring focus:ring-blue-200" />
+                        <button type="submit"
+                            class="bg-blue-600 hover:bg-blue-700 text-white py-2 w-full rounded text-sm">
+                            🔄 비밀번호 변경하기
+                        </button>
+                    </form>
 
 
-            <!-- DB 정보 -->
-<!-- DB 정보 (개선 UI) -->
-<div class="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
-    <div class="flex items-center mb-3">
-        <svg class="h-5 w-5 text-gray-500 mr-2" fill="none" stroke="currentColor" stroke-width="2"
-            viewBox="0 0 24 24">
-            <path d="M4 4v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V4M4 4h16M4 4l8 6.5L20 4" />
-        </svg>
-        <h3 class="text-sm font-bold text-gray-800">데이터베이스 정보</h3>
+                </div>
+
+                <!-- 서비스 연장 -->
+                <div x-show="tab === 'extend'" class="text-sm text-gray-700">
+                    <h3 class="font-semibold text-gray-800 mb-2">서비스 연장</h3>
+                    <p class="mb-2">📅 현재 만료일: <strong>{{ $service->expired_at->format('Y년 m월 d일') }}</strong></p>
+
+                    @php
+                        $basePrice = $service->plan->price;
+                        $periods = [
+                            1 => ['label' => '1개월', 'discount' => 0],
+                            3 => ['label' => '3개월', 'discount' => 2],
+                            6 => ['label' => '6개월', 'discount' => 4],
+                            12 => ['label' => '12개월', 'discount' => 10],
+                        ];
+
+    $canExtend = \Carbon\Carbon::now()->diffInDays($service->expired_at, false) <= 7;
+                        @endphp
+
+   
+
+@if ($canExtend)
+                    <form method="POST" action="{{ route('services.extend.request', $service->id) }}" class="space-y-4">
+                        @csrf
+                        <label class="block text-sm font-medium text-gray-700">연장할 기간</label>
+                        <select name="period" class="w-full border rounded p-2" onchange="updatePrice()">
+                            @foreach ($periods as $months => $info)
+                                @php
+                                    $discountRate = (100 - $info['discount']) / 100;
+                                    $finalPrice = floor($basePrice * $months * $discountRate / 10) * 10;
+                                @endphp
+                                <option value="{{ $months }}" data-price="{{ $finalPrice }}">
+                                    {{ $info['label'] }} (₩{{ number_format($finalPrice) }}
+                                    @if($info['discount']) / {{ $info['discount'] }}% 할인 @endif)
+                                </option>
+                            @endforeach
+                        </select>
+                        <p class="text-sm text-gray-600">
+                            결제 금액: ₩<span id="amountPreview">{{ number_format($basePrice) }}</span>
+                        </p>
+                        <button type="submit"
+                            class="bg-blue-600 hover:bg-blue-700 text-white py-2 w-full rounded text-sm">
+                            💳 결제하고 연장하기
+                        </button>
+                    </form>
+@else
+    <div class="text-red-500 text-sm mt-4">
+        서비스 만료일이 아직 7일 이상 남아있습니다. <br>
+        <strong>{{ $service->expired_at->subDays(7)->format('Y년 m월 d일') }}</strong> 이후부터 연장이 가능합니다.
     </div>
+@endif
 
-    <div class="text-sm text-gray-700 space-y-1 pl-1">
-        <p><span class="font-semibold">DB 이름:</span> <code class="bg-white px-1 py-0.5 rounded border text-blue-700">{{ $service->whm_username }}_db</code></p>
-        <p><span class="font-semibold">DB 유저:</span> <code class="bg-white px-1 py-0.5 rounded border text-blue-700">{{ $service->whm_username }}_admin</code></p>
-        <p><span class="font-semibold">DB 비밀번호:</span> <span class="text-gray-500">(WHM 계정 비밀번호와 동일 - 보안상 비공개)</span></p>
-    </div>
-</div>
-
-<hr class="my-6">
-
-<h3 class="text-lg font-bold">🔐 cPanel 비밀번호 변경</h3>
-
-<form id="changePasswordForm" method="POST" action="{{ route('services.updatePassword', $service->id) }}" class="space-y-4 mt-4">
-    @csrf
-
-    <label class="block text-sm font-medium text-gray-700">새 비밀번호</label>
-    <input type="password" id="new_password" name="new_password" required minlength="8"
-        class="w-full border rounded p-2 focus:ring focus:ring-blue-200" />
-
-    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white py-2 w-full rounded">
-        🔄 비밀번호 변경하기
-    </button>
-</form>
-
-<!-- 모달 -->
-<div id="alertModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
-    <div class="bg-white rounded-lg p-6 max-w-sm w-full text-center shadow-xl">
-        <p id="alertText" class="text-gray-800 font-semibold mb-4">알림 메시지</p>
-        <button onclick="closeModal()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-            확인
-        </button>
-    </div>
-</div>
-
-    <hr>
-
-
-            @php
-    $basePrice = $service->plan->price; // 예: 10000
-    $periods = [
-        1 => ['label' => '1개월', 'discount' => 0],
-        3 => ['label' => '3개월', 'discount' => 2],
-        6 => ['label' => '6개월', 'discount' => 4],
-        12 => ['label' => '12개월', 'discount' => 10],
-    ];
-@endphp
-
-<h3 class="text-lg font-bold mt-8">⏳ 서비스 연장</h3>
-
-<!-- 현재 만료일 표시 -->
-<div class="mt-2 text-sm text-gray-600">
-    현재 만료일: <span class="font-medium text-gray-800">{{ $service->expired_at->format('Y년 m월 d일') }}</span>
-</div>
-
-<form method="POST" action="{{ route('services.extend.request', $service->id) }}" class="space-y-4 mt-4">
-    @csrf
-
-    <label class="block text-sm font-medium text-gray-700">연장할 기간</label>
-    <select name="period" class="w-full border rounded p-2" onchange="updatePrice()">
-        @foreach ($periods as $months => $info)
-            @php
-                $discountRate = (100 - $info['discount']) / 100;
-                $finalPrice = floor($basePrice * $months * $discountRate / 10) * 10;
-            @endphp
-            <option value="{{ $months }}" data-price="{{ $finalPrice }}">
-                {{ $info['label'] }} (₩{{ number_format($finalPrice) }} @if($info['discount']) / {{ $info['discount'] }}% 할인 @endif)
-            </option>
-        @endforeach
-    </select>
-
-    <div id="finalAmount" class="text-sm text-gray-600">
-        결제 금액: ₩<span id="amountPreview">{{ number_format($basePrice) }}</span>
-    </div>
-
-    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white py-2 w-full rounded">
-        💳 결제하고 연장하기
-    </button>
-</form>
-
-<script>
+                    <script>
     function updatePrice() {
         const select = document.querySelector('select[name="period"]');
         const selectedOption = select.options[select.selectedIndex];
@@ -110,10 +127,11 @@
 </script>
 
 
+                </div>
 
-
-            <hr>
-            <h3 class="text-lg font-bold">워드프레스 자동 설치</h3>
+                <!-- 워드프레스 -->
+                <div x-show="tab === 'wordpress'" class="text-sm text-gray-700">
+                    <h3 class="text-lg font-bold">워드프레스 자동 설치</h3>
 
             <!-- 설치 상태 -->
             <div id="wp-status" class="flex items-center gap-2 text-sm text-gray-700">
@@ -153,22 +171,34 @@
                 <!-- 결과 메시지 -->
                 <div id="installResult" class="hidden mt-4 text-sm p-3 rounded"></div>
             </div>
+                </div>
 
-            <hr>
-            <h3 class="text-lg font-bold">테마 선택</h3>
-            {{-- 향후 테마 UI --}}
+                <!-- 테마 관리 -->
+                <div x-show="tab === 'theme'" class="text-sm text-gray-700">
+                    <h3 class="font-semibold text-gray-800 mb-2">테마 관리</h3>
+                    <p class="text-sm text-gray-500">※ 추후 기능 추가 예정입니다.</p>
+                </div>
 
-             <hr>
-            <div class="mt-8">
-                <a href="{{ route('services.refundForm', $service->id) }}"
-   data-turbo="false"
-   class="block w-full text-center bg-red-600 hover:bg-red-700 text-white py-2 rounded">
-    💸 환불 요청하기
-</a>
+                <!-- 환불 -->
+                <div x-show="tab === 'refund'">
+                    <h3 class="font-semibold text-gray-800 mb-2">환불 요청</h3>
+                    <a href="{{ route('services.refundForm', $service->id) }}"
+                        class="block w-full text-center bg-red-600 hover:bg-red-700 text-white py-2 rounded text-sm">
+                        💸 환불 요청하기
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-
+                    <!-- 모달 -->
+<div id="alertModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
+    <div class="bg-white rounded-lg p-6 max-w-sm w-full text-center shadow-xl">
+        <p id="alertText" class="text-gray-800 font-semibold mb-4">알림 메시지</p>
+        <button onclick="closeModal()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            확인
+        </button>
+    </div>
+</div>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <script>

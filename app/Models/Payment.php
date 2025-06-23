@@ -15,6 +15,7 @@ class Payment extends Model
         'status',
         'approved_at',
         'service_id',
+        'start_at',
     ];
 
     public function user()

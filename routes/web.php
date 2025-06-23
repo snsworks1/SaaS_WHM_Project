@@ -56,6 +56,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // 🔁 환불
     Route::get('/services/{id}/refund', [ServiceSettingsController::class, 'refundForm'])->name('services.refundForm');
     Route::post('/services/{id}/process-refund', [ServiceSettingsController::class, 'processRefund'])->name('services.processRefund');
+    Route::post('/services/{id}/refund', [ServiceRefundController::class, 'refund'])->name('services.refund');
 
     // ⚙ 서비스 설정
     Route::get('/services/{service}/settings', [ServiceSettingsController::class, 'settings'])->name('services.settings');

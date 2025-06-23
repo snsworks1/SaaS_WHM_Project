@@ -88,13 +88,17 @@ public function confirm(Request $request, $id)
         abort(403, '결제 금액 위조가 감지되었습니다.');
     }
 
+    $previousExpiredAt = $service->expired_at;
     // ✅ 3. 서비스 연장 처리
     $paidAt = Carbon::parse($response['approvedAt']);
     $newExpireAt = $service->expired_at && $service->expired_at->gt(now())
         ? $service->expired_at->addMonths($period)
         : now()->addMonths($period);
 
-    $service->update(['expired_at' => $newExpireAt]);
+    $service->update([
+    'expired_at' => $newExpireAt,
+    'order_id' => $orderId, // ✅ 갱신 반영
+]);
 
     // ✅ 4. 연장 기록 저장
     ServiceExtension::create([
@@ -113,8 +117,8 @@ public function confirm(Request $request, $id)
     'amount'      => $amount,
     'order_id'    => $orderId,
     'payment_key' => $paymentKey,
-    'status'      => 'paid',
-    'paid_at'     => $paidAt,
+    'status'      => 'PAID',
+    'start_at'    => $previousExpiredAt, // ✅ 올바른 기준값 반영
 ]);
 
     // ✅ 6. 뷰 렌더링
