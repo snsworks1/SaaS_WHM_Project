@@ -27,6 +27,32 @@
     </div>
 </div>
 
+<hr class="my-6">
+
+<h3 class="text-lg font-bold">🔐 cPanel 비밀번호 변경</h3>
+
+<form id="changePasswordForm" method="POST" action="{{ route('services.updatePassword', $service->id) }}" class="space-y-4 mt-4 max-w-md">
+    @csrf
+
+    <label class="block text-sm font-medium text-gray-700">새 비밀번호</label>
+    <input type="password" id="new_password" name="new_password" required minlength="8"
+        class="w-full border rounded p-2 focus:ring focus:ring-blue-200" />
+
+    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white py-2 w-full rounded">
+        🔄 비밀번호 변경하기
+    </button>
+</form>
+
+<!-- 모달 -->
+<div id="alertModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
+    <div class="bg-white rounded-lg p-6 max-w-sm w-full text-center shadow-xl">
+        <p id="alertText" class="text-gray-800 font-semibold mb-4">알림 메시지</p>
+        <button onclick="closeModal()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            확인
+        </button>
+    </div>
+</div>
+
     <hr>
 
 
@@ -226,4 +252,56 @@
             });
         });
     </script>
+
+
+ 
+<script>
+    function openModal(message) {
+        const modal = document.getElementById('alertModal');
+        const text = document.getElementById('alertText');
+        if (modal && text) {
+            text.innerText = message;
+            modal.classList.remove('hidden');
+        }
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('alertModal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('changePasswordForm');
+        const passwordInput = document.getElementById('new_password');
+
+        if (form && passwordInput) {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault(); // 무조건 막고 시작
+
+                const password = passwordInput.value.trim();
+
+                // ✅ 정규식 검사: 대문자 + 소문자 + 숫자 + 특수문자 포함 8자 이상
+                const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
+                if (!pattern.test(password)) {
+                    openModal('비밀번호는 대문자, 소문자, 숫자, 특수문자를 포함한 8자 이상이어야 합니다.');
+                    return;
+                }
+
+                form.submit(); // 통과 시 수동 제출
+            });
+        }
+
+        // ✅ 서버에서 전달된 세션 메시지도 모달로 띄우기
+        @if(session('success'))
+            openModal(@json(session('success')));
+        @elseif(session('error'))
+            openModal(@json(session('error')));
+        @endif
+    });
+</script>
+
+
 </x-app-layout>

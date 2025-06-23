@@ -222,4 +222,30 @@ public function createCpanelSession($cpUsername)
     return null;
 }
 
+public function changeCpanelPassword($username, $newPassword)
+{
+    try {
+        $response = Http::withHeaders([
+            'Authorization' => 'whm ' . $this->username . ':' . $this->token,
+        ])->withOptions(['verify' => false])
+          ->get("https://{$this->server->api_hostname}:2087/json-api/passwd", [
+            'api.version' => 1,
+            'user' => $username,
+            'password' => $newPassword
+        ]);
+
+        $json = $response->json();
+        Log::info('🔧 WHM 응답', ['json' => $json]);
+
+        if (isset($json['metadata']['result']) && $json['metadata']['result'] == 1) {
+            return ['success' => true];
+        }
+
+        return ['success' => false, 'message' => 'WHM API 오류 발생', 'response' => $json];
+    } catch (\Exception $e) {
+        Log::error('❌ WHM API 호출 중 예외 발생', ['error' => $e->getMessage()]);
+        return ['success' => false, 'message' => '예외 발생'];
+    }
+}
+
 }

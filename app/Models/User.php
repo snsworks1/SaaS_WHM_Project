@@ -10,6 +10,9 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Service;
+use App\Notifications\CustomVerifyEmail;
+use App\Notifications\CustomResetPassword;
+
 
 
 
@@ -83,6 +86,16 @@ public function isAdmin()
 public function services()
 {
     return $this->hasMany(Service::class);
+}
+
+public function sendEmailVerificationNotification()
+{
+    $this->notify(new CustomVerifyEmail);
+}
+
+public function sendPasswordResetNotification($token)
+{
+    $this->notify(new CustomResetPassword($token));
 }
 
 }

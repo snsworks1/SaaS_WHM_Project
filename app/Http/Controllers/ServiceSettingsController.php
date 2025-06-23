@@ -13,6 +13,10 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Support\Facades\Crypt;
 use Carbon\Carbon;
 use App\Services\RefundCalculator;
+use App\Services\WhmApiService;
+use App\Notifications\CpanelPasswordChanged;
+
+
 
 
 class ServiceSettingsController extends Controller
@@ -163,5 +167,52 @@ if ($service->plan->price == 0 || (!$calc['isEligible'] && $calc['durationDays']
     return back()->with('error', '환불 처리에 실패했습니다.');
 }
 
+public function updatePassword(Request $request, $id)
+{
+    // ✅ 1. 서버 측 유효성 검사
+    $request->validate([
+        'new_password' => [
+            'required',
+            'string',
+            'min:8',
+            'max:32',
+            'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/'
+        ],
+    ], [
+        'new_password.regex' => '비밀번호는 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.',
+    ]);
+
+            // ✅ 2. 서비스 불러오기
+    $service = Service::with('whmServer')->findOrFail($id);
+    $whm = new WhmApiService($service->whmServer);
+   
+    $result = $whm->changeCpanelPassword($service->whm_username, $request->new_password);
+
+    if ($result['success']) {
+
+
+    // ✅ 3. WHM 서버에 비밀번호 변경
+    
+
+
+        // ✅ 4. DB에도 암호화하여 저장
+        $service->whm_password = Crypt::encryptString($request->new_password);
+        $service->save();
+
+        // ✅ 5. 사용자에게 알림 메일 발송
+        $service->user->notify(new CpanelPasswordChanged($service->whm_domain));
+
+        return back()->with('success', '✅ 비밀번호가 변경되었습니다. 이메일로도 안내되었습니다.');
+    }else {
+        Log::error('WHM 비밀번호 변경 실패', [
+            'user_id' => auth()->id(),
+            'whm_username' => $service->whm_username,
+            'response' => $result,
+        ]);
+
+        return back()->with('error', '❌ 비밀번호 변경에 실패했습니다. 다시 시도해주세요.');
+    }
+
+}
 
 }

@@ -2,6 +2,35 @@
 ## 🔄 최근 작업 내역
 
 
+✅ [2025-06-23] 이메일 인증 / cpanel 패스워드 변경 기능 구현
+
+1. cPanel 비밀번호 변경 기능 개선
+비밀번호 변경 UI 구성 (settings.blade.php)
+
+버튼 클릭 시 JS 정규식 검사 추가 (대문자/소문자/숫자/특수문자 포함 조건)
+
+서버 측 Laravel에서도 동일한 유효성 검사 적용 (regex 조건)
+
+비밀번호 변경 시 WHM API로 전달하여 실제 변경 처리
+
+변경 성공 시 DB 저장 (Crypt::encryptString)
+
+사용자에게 비밀번호 변경 알림 메일 발송
+
+2. 버그 수정 사항
+❌ Undefined variable $result → $result 선언 전에 조건문 접근하던 문제 수정
+
+❌ Class "App\Http\Controllers\CpanelPasswordChanged" not found → use App\Notifications\CpanelPasswordChanged; 추가하여 해결
+
+✅ WHM 응답 성공 처리 확인: Password changed for user “kdh01”
+
+🛠 관련 수정 파일
+파일 경로	수정 내용
+resources/views/services/settings.blade.php	비밀번호 입력 필드 추가 및 JS 정규식 검사
+app/Http/Controllers/ServiceSettingsController.php	updatePassword() 로직 구현 및 오류 수정
+app/Notifications/CpanelPasswordChanged.php	알림 클래스 사용 (use문 추가)
+
+
 ✅ [2025-06-22] 관리자 통계 - 연장 결제 리스트 기능 추가
 📊 핵심 기능
 

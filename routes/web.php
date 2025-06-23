@@ -61,7 +61,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/services/{service}/settings', [ServiceSettingsController::class, 'settings'])->name('services.settings');
     Route::post('/services/{service}/install-wordpress', [ServiceSettingsController::class, 'installWordPress'])->name('services.installWordPress');
     Route::get('/services/{id}/check-wp', [ServiceSettingsController::class, 'checkWordPress'])->name('services.checkWp');
+    Route::post('/services/{id}/update-password', [ServiceSettingsController::class, 'updatePassword'])->name('services.updatePassword');
 
+    
     // 🧾 대시보드 결제내역
     Route::get('/dashboard/payments', [\App\Http\Controllers\Dashboard\PaymentController::class, 'index'])->name('dashboard.payments');
 });
