@@ -10,15 +10,28 @@ use App\Services\TossPaymentService;
 
 class PaymentController extends Controller
 {
-    public function index()
-    {
-        $payments = Payment::with('plan')
-            ->where('user_id', Auth::id())
-            ->orderByDesc('approved_at')
-            ->get();
+    public function index(Request $request)
+{
+    $query = Payment::with(['plan', 'service']) // 🔄 service 추가됨
+        ->where('user_id', Auth::id());
 
-        return view('dashboard.payments', compact('payments'));
+    // 🔍 필터: 상태
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
     }
+
+    // 🔍 필터: 날짜
+    if ($request->filled('from')) {
+        $query->whereDate('approved_at', '>=', $request->from);
+    }
+    if ($request->filled('to')) {
+        $query->whereDate('approved_at', '<=', $request->to);
+    }
+
+    $payments = $query->orderByDesc('approved_at')->paginate(10);
+
+    return view('dashboard.payments', compact('payments'));
+}
 
     public function showReceipt($order_id)
 {
