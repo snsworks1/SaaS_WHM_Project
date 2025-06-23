@@ -41,13 +41,17 @@ class ServiceController extends Controller
 
     // ✅ 이 부분에서 CloudflareService 호출
     if ($service->dns_record_id) {
-        try {
-            $cloudflare = new CloudflareService();
-            $cloudflare->deleteDnsRecord($service->dns_record_id);
-        } catch (\Exception $e) {
-            \Log::error('Cloudflare DNS 삭제 실패', ['error' => $e->getMessage()]);
-        }
+    try {
+        $cloudflare = new CloudflareService();
+        $cloudflare->deleteDnsRecord($service->whm_domain, $service->dns_record_id); // ✅ 수정
+    } catch (\Exception $e) {
+        \Log::error('Cloudflare DNS 삭제 실패', [
+            'error' => $e->getMessage(),
+            'domain' => $service->whm_domain,
+            'record_id' => $service->dns_record_id
+        ]);
     }
+}
 
         // ✅ 사용량 차감 로직
         $plan = $service->plan;

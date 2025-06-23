@@ -18,7 +18,7 @@
         @foreach ($plans as $plan)
 
     {{-- 테스트 플랜은 특정 사용자만 보이게 --}}
-    @if ($plan->name === 'test' && (!auth()->check() || auth()->user()->email !== 'snsworks1@gmail.com'))
+    @if ($plan->name === 'test2' && $plan->name === 'test' && (!auth()->check() || auth()->user()->email !== 'snsworks1@gmail.com'))
         @continue
     @endif
 

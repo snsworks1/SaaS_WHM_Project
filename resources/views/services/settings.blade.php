@@ -31,7 +31,7 @@
 
 <h3 class="text-lg font-bold">🔐 cPanel 비밀번호 변경</h3>
 
-<form id="changePasswordForm" method="POST" action="{{ route('services.updatePassword', $service->id) }}" class="space-y-4 mt-4 max-w-md">
+<form id="changePasswordForm" method="POST" action="{{ route('services.updatePassword', $service->id) }}" class="space-y-4 mt-4">
     @csrf
 
     <label class="block text-sm font-medium text-gray-700">새 비밀번호</label>

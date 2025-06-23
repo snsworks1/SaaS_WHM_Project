@@ -24,7 +24,7 @@
 <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">           
      @forelse ($services as $service)
         <div class="bg-white border shadow-sm rounded-xl p-5">
-                                <h3 class="font-bold text-lg mb-2">{{ $service->plan->name }}</h3>
+                                <h3 class="font-bold text-lg mb-2"><strong>플랜 : </strong>{{ $service->plan->name }}</h3>
                     <p class="text-gray-700 mb-1"><strong>도메인:</strong> {{ $service->whm_domain }}</p>
                     <p class="text-gray-700 mb-1"><strong>WHM 계정:</strong> {{ $service->whm_username }}</p>
                     <div class="mt-2 text-sm text-gray-600">
