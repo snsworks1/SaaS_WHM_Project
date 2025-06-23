@@ -36,5 +36,59 @@
 
   gtag('config', 'G-Y7BBE8FQ2H');
 </script>
+
+<!-- Channel Plugin Load -->
+<script>
+(function(){
+    var w = window;
+    if(w.ChannelIO){ return w.console.error("ChannelIO script included twice."); }
+    var ch = function(){ ch.c(arguments); };
+    ch.q = [];
+    ch.c = function(args){ ch.q.push(args); };
+    w.ChannelIO = ch;
+
+    function l(){
+        if(w.ChannelIOInitialized){ return; }
+        w.ChannelIOInitialized = true;
+        var s = document.createElement("script");
+        s.type = "text/javascript";
+        s.async = true;
+        s.src = "https://cdn.channel.io/plugin/ch-plugin-web.js";
+        var x = document.getElementsByTagName("script")[0];
+        if(x.parentNode){ x.parentNode.insertBefore(s, x); }
+    }
+
+    if(document.readyState === "complete"){ l(); }
+    else {
+        w.addEventListener("DOMContentLoaded", l);
+        w.addEventListener("load", l);
+    }
+})();
+</script>
+
+@auth
+@php
+    $service = auth()->user()->service; // hasOne 관계라고 가정
+@endphp
+<script>
+ChannelIO('boot', {
+  pluginKey: "d090c74f-23b3-40ae-8ba5-a5d6f84dcc31",
+  memberId: "{{ auth()->user()->id }}",
+  profile: {
+    name: "{{ auth()->user()->name }}",
+    email: "{{ auth()->user()->email }}",
+    mobileNumber: "{{ auth()->user()->phone }}",
+    server_domain: "{{ $service?->domain ?? '없음' }}",
+    plan_name: "{{ $service?->plan?->name ?? '없음' }}"
+  }
+});
+</script>
+@else
+<script>
+ChannelIO('boot', {
+  pluginKey: "d090c74f-23b3-40ae-8ba5-a5d6f84dcc31"
+});
+</script>
+@endauth
     </body>
 </html>
