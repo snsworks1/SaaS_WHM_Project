@@ -51,7 +51,7 @@ class PaymentController extends Controller
             ]);
         }
 
-        $receiptUrl = $response['receipt']['url'] ?? null;
+      
 
         if (Payment::where('order_id', $orderId)->exists()) {
             return view('checkout.confirm', compact('orderId', 'totalAmount', 'plan'));
