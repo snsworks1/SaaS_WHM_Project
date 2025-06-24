@@ -141,7 +141,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
 Route::resource('themes', ThemeController::class);
     Route::delete('/themes/{theme}/screenshot/{index}', [ThemeController::class, 'deleteScreenshot'])
         ->name('admin.themes.deleteScreenshot');
+
+        
 });
+
+Route::post('/user/themes/{service}/{theme}/install', [ThemeInstallController::class, 'install']);
+
 
 
 // ✅ API/비동기 체크
