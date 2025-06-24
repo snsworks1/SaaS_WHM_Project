@@ -25,7 +25,8 @@ use App\Http\Controllers\Admin\{
     NoticeController as AdminNoticeController,
     PatchnoteController as AdminPatchnoteController,
     AdminLogController,
-    AdminStatsController
+    AdminStatsController,
+    ThemeController
 };
 
 // 🚪 기본 라우트
@@ -124,6 +125,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
 
     // 📈 통계 대시보드
     Route::get('/stats', [AdminStatsController::class, 'index'])->name('stats.index');
+
+    // 테마관리 페이지
+    Route::resource('themes', ThemeController::class);
+    Route::delete('/themes/{theme}/screenshot/{index}', [ThemeController::class, 'deleteScreenshot'])
+        ->name('themes.deleteScreenshot');
+
 });
 
 // ✅ API/비동기 체크

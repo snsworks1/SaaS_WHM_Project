@@ -27,6 +27,9 @@
             <a href="{{ route('admin.whm-servers.index') }}" class="flex items-center px-4 py-2 text-gray-600 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700">
                 WHM 서버 관리
             </a>
+            <a href="{{ route('admin.themes.index') }}" class="flex items-center px-4 py-2 text-gray-600 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700">
+                테마 관리
+            </a>
             
             <a href="{{ route('admin.error-logs.index') }}" class="flex items-center px-4 py-2 text-gray-600 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700">
     에러 모니터링
