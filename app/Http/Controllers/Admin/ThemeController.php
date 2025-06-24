@@ -62,6 +62,8 @@ public function edit($id)
 
 public function update(Request $request, Theme $theme)
 {
+    \Log::info('ThemeController::update called');
+
     $validated = $request->validate([
         'name' => 'required|string|max:255',
         'zip_file' => 'nullable|file|mimes:zip',
@@ -127,16 +129,27 @@ public function destroy(Theme $theme)
     return redirect()->route('admin.themes.index')->with('success', '테마가 삭제되었습니다.');
 }
 
-    public function deleteScreenshot(Theme $theme, $index)
+    public function deleteScreenshot(Request $request, Theme $theme, $index)
 {
+    \Log::info('[삭제 요청 도착]', ['theme_id' => $theme->id, 'index' => $index]);
+
     $screenshots = $theme->screenshots ?? [];
-    if (isset($screenshots[$index])) {
-        Storage::disk('public')->delete($screenshots[$index]);
-        array_splice($screenshots, $index, 1);
-        $theme->screenshots = $screenshots;
-        $theme->save();
+
+    if (!isset($screenshots[$index])) {
+        return response()->json(['error' => '스크린샷이 존재하지 않습니다.'], 404);
     }
-    return back()->with('success', '스크린샷이 삭제되었습니다.');
+
+    $path = storage_path('app/public/' . $screenshots[$index]);
+
+    if (file_exists($path)) {
+        unlink($path);
+    }
+
+    unset($screenshots[$index]);
+    $theme->screenshots = array_values($screenshots); // 인덱스 재정렬
+    $theme->save();
+
+    return response()->json(['success' => true]);
 }
 
 

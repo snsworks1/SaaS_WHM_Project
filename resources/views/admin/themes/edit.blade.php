@@ -53,14 +53,8 @@
                 @foreach ($theme->screenshots ?? [] as $index => $screenshot)
                     <div class="relative group">
                         <img src="{{ asset('storage/' . $screenshot) }}" class="rounded shadow w-full h-32 object-cover">
-                        <form method="POST" action="{{ route('admin.themes.deleteScreenshot', [$theme->id, $index]) }}"
-                              onsubmit="return confirm('이미지를 삭제하시겠습니까?')"
-                              class="absolute top-1 right-1">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                    class="bg-red-600 text-white text-xs rounded-full px-2 py-1 opacity-80 hover:opacity-100">✕</button>
-                        </form>
+                        <button type="button" onclick="deleteScreenshot({{ $theme->id }}, {{ $index }})"
+    class="bg-red-600 text-white text-xs rounded-full px-2 py-1">✕</button>
                     </div>
                 @endforeach
             </div>
@@ -98,6 +92,14 @@
             </template>
         </div>
 
+        <div class="mb-4">
+    <label class="block font-medium mb-1">배포 상태</label>
+    <select name="status" class="w-full border-gray-300 rounded">
+        <option value="enabled" {{ old('status', $theme->status ?? 'enabled') === 'enabled' ? 'selected' : '' }}>배포중</option>
+        <option value="disabled" {{ old('status', $theme->status ?? '') === 'disabled' ? 'selected' : '' }}>배포중지</option>
+    </select>
+</div>
+
         <div class="flex justify-end">
             <button type="submit"
                     class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
@@ -108,4 +110,25 @@
 </div>
 
 <script src="//unpkg.com/alpinejs" defer></script>
+
+<script>
+function deleteScreenshot(themeId, index) {
+    if (!confirm('이미지를 삭제하시겠습니까?')) return;
+
+    fetch(`/admin/themes/${themeId}/screenshot/${index}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json',
+        },
+    }).then(res => {
+        if (res.ok) {
+            location.reload(); // 삭제 후 새로고침
+        } else {
+            alert('삭제 실패');
+        }
+    });
+}
+</script>
 @endsection
+

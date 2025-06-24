@@ -176,7 +176,8 @@
                 <!-- 테마 관리 -->
                 <div x-show="tab === 'theme'" class="text-sm text-gray-700">
                     <h3 class="font-semibold text-gray-800 mb-2">테마 관리</h3>
-                    <p class="text-sm text-gray-500">※ 추후 기능 추가 예정입니다.</p>
+                    @include('theme.index', ['themes' => \App\Models\Theme::all()])
+
                 </div>
 
                 <!-- 환불 -->

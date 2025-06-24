@@ -10,7 +10,9 @@ use App\Http\Controllers\{
     ServiceExtensionController,
     NoticeController,
     PatchnoteController,
-    DashboardController as UserDashboardController
+    DashboardController as UserDashboardController,
+    ThemeInstallController
+
 };
 use App\Models\Notice;
 
@@ -26,8 +28,9 @@ use App\Http\Controllers\Admin\{
     PatchnoteController as AdminPatchnoteController,
     AdminLogController,
     AdminStatsController,
-    ThemeController
 };
+
+use App\Http\Controllers\Admin\ThemeController;
 
 // 🚪 기본 라우트
 Route::get('/', fn() => view('welcome'));
@@ -70,6 +73,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard/payments', [\App\Http\Controllers\Dashboard\PaymentController::class, 'index'])->name('dashboard.payments');
     Route::get('/dashboard/payments/{order_id}/receipt', [\App\Http\Controllers\Dashboard\PaymentController::class, 'showReceipt'])
     ->name('dashboard.payments.receipt');
+
+    // 테마 페이지
+    Route::get('/services/{service}/themes', [App\Http\Controllers\ThemeDisplayController::class, 'index'])
+        ->name('services.themes.index');
+        Route::post('/services/{service}/themes/{theme}/install', [ThemeInstallController::class, 'install'])
+    ->name('user.themes.install')
+    ->middleware('auth');
+
 
 });
 
@@ -127,11 +138,11 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::get('/stats', [AdminStatsController::class, 'index'])->name('stats.index');
 
     // 테마관리 페이지
-    Route::resource('themes', ThemeController::class);
+Route::resource('themes', ThemeController::class);
     Route::delete('/themes/{theme}/screenshot/{index}', [ThemeController::class, 'deleteScreenshot'])
-        ->name('themes.deleteScreenshot');
-
+        ->name('admin.themes.deleteScreenshot');
 });
+
 
 // ✅ API/비동기 체크
 Route::post('/check-whm-username', [\App\Http\Controllers\Api\ProvisioningController::class, 'checkWhmUsername'])->name('check-whm-username');
