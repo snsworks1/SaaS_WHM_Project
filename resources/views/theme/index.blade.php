@@ -1,6 +1,22 @@
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.store('installedThemes', {})
+
+    fetch(`/user/themes/{{ $service->id }}/installed`)
+        .then(res => res.json())
+        .then(installedFolders => {
+            Alpine.store('installedThemes', installedFolders.reduce((acc, folder) => {
+                acc[folder] = true;
+                return acc;
+            }, {}));
+        });
+});
+</script>
+
 <div class="space-y-4">
     <h3 class="text-lg font-semibold">🧅 사용 가능한 테마</h3>
 
+    
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse (collect($themes)->where('status', 'enabled') as $theme)
             @php
@@ -8,8 +24,12 @@
             @endphp
 
             <div
-                x-data="themeCard({{ Js::from($theme->id) }}, {{ Js::from($service->id) }}, {{ Js::from($theme->name) }}, {{ Js::from($isInstalled) }}, {{ Js::from($theme->screenshots ?? []) }})"
-                class="border rounded-xl shadow p-4 bg-white"
+x-data="themeCard(
+    {{ Js::from($theme->id) }},
+    {{ Js::from($service->id) }},
+    {{ Js::from($theme->name) }},
+    {{ Js::from($theme->screenshots ?? []) }}
+)"                class="border rounded-xl shadow p-4 bg-white"
                 x-init="startSlider()"
             >
                 <p class="text-base font-semibold mb-2">테마 명 : {{ $theme->name }}</p>
@@ -26,13 +46,23 @@
 
                 <p class="text-sm text-gray-500 mt-2">대상: {{ $theme->plan_type === 'both' ? 'Basic / Pro 공용' : ucfirst($theme->plan_type) }}</p>
 
-                <button
-                    :disabled="isInstalled || loading"
-                    :class="buttonClass"
-                    class="mt-4 w-full py-2 rounded text-sm"
-                    x-text="buttonText"
-                    @click="installTheme"
-                ></button>
+                <template x-if="isInstalled">
+    <button
+        class="mt-4 w-full py-2 rounded text-sm bg-green-500 text-white cursor-default opacity-80"
+        disabled
+    >
+        ✅ 설치됨
+    </button>
+</template>
+<template x-if="!isInstalled">
+    <button
+        :disabled="loading"
+        :class="buttonClass"
+        class="mt-4 w-full py-2 rounded text-sm"
+        x-text="buttonText"
+        @click="installTheme"
+    ></button>
+</template>
 
                 <!-- 모달 -->
                 <template x-if="showModal">
@@ -71,19 +101,23 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-function themeCard(themeId, serviceId, themeName, installed, screenshots) {
+function themeCard(themeId, serviceId, folderName, screenshots) {
     return {
         active: 0,
         showModal: false,
         interval: null,
         screenshots: screenshots,
-        isInstalled: installed,
         loading: false,
+
+        get isInstalled() {
+            return Alpine.store('installedThemes')[folderName] ?? false;
+        },
 
         get buttonText() {
             if (this.loading) return '⏳ 설치중...';
             return this.isInstalled ? '✅ 설치 완료' : '🚀 설치';
         },
+
         get buttonClass() {
             if (this.isInstalled || this.loading) {
                 return 'bg-gray-500 text-white cursor-not-allowed';
@@ -128,23 +162,16 @@ function themeCard(themeId, serviceId, themeName, installed, screenshots) {
             .then(data => {
                 this.loading = false;
 
-                if (data.status === 'success') {
+                if (data.status === 'success' || data.status === 'exists') {
                     Swal.fire({
-                        icon: 'success',
-                        title: '설치 완료',
-                        text: '테마가 성공적으로 설치되었습니다!',
+                        icon: data.status === 'success' ? 'success' : 'info',
+                        title: data.status === 'success' ? '설치 완료' : '이미 설치됨',
+                        text: data.message || '테마 설치가 완료되었습니다.',
                         confirmButtonColor: '#3085d6',
                     });
-                    this.isInstalled = true;
 
-                } else if (data.status === 'exists') {
-                    Swal.fire({
-                        icon: 'info',
-                        title: '이미 설치됨',
-                        text: data.message || '이 테마는 이미 설치되어 있습니다.',
-                        confirmButtonColor: '#3085d6',
-                    });
-                    this.isInstalled = true;
+                    // 설치됨 상태 갱신
+                    Alpine.store('installedThemes')[folderName] = true;
 
                 } else {
                     Swal.fire({

@@ -35,34 +35,13 @@ class ServiceSettingsController extends Controller
 
 public function checkWordPress($id)
 {
-    $service = Service::with('whmServer')->findOrFail($id);
-    $whmServer = $service->whmServer;
+    $service = Service::findOrFail($id);
 
-    $ip = $whmServer->ip_address;
-    $port = env('SSH_PORT', '49999');
-    $cpUser = $service->whm_username;
-    $path = "/home/{$cpUser}/public_html";
-    $command = "wp core version --path={$path} --allow-root";
-
-    $process = new \Symfony\Component\Process\Process([
-        '/var/www/run-wp-check.sh',
-        $ip,
-        $port,
-        $cpUser,
-        $command
+    return response()->json([
+        'installed' => $service->wordpress_installed,
+        'version' => $service->wordpress_version,
     ]);
-    $process->run();
-
-    if ($process->isSuccessful()) {
-        $output = trim($process->getOutput());
-        Log::info('✅ wp version 확인 성공', ['output' => $output]);
-        return response()->json(['installed' => true, 'version' => $output]);
-    } else {
-        Log::error('❌ wp version 확인 실패', ['error' => $process->getErrorOutput()]);
-        return response()->json(['installed' => false]);
-    }
 }
-
 
 public function installWordPress(Request $request, $id)
 {
@@ -107,6 +86,10 @@ if (!$zipUrl) {
 
     if ($process->isSuccessful()) {
         Log::info('✅ 워드프레스 설치 완료', ['output' => $process->getOutput()]);
+            $service->update([
+        'wordpress_installed' => true,
+        'wordpress_version' => $request->wp_version,
+    ]);
         return back()->with('success', '워드프레스가 성공적으로 설치되었습니다.');
     } else {
         Log::error('❌ 워드프레스 설치 실패', ['error' => $process->getErrorOutput()]);

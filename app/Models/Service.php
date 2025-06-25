@@ -18,6 +18,8 @@ class Service extends Model
     'dns_record_id',       // 이미 추가된 필드
     'whm_password',         // ✅ 여기에 추가해야 저장됨
             'order_id',    // ✅ 이거 반드시 추가해야 합니다
+                'wordpress_installed',
+    'wordpress_version',
 
 ];
     protected $dates = [
@@ -28,6 +30,8 @@ class Service extends Model
     protected $casts = [
         'started_at' => 'date',
         'expired_at' => 'date',
+            'wordpress_installed' => 'boolean',
+
     ];
 
     

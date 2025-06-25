@@ -93,5 +93,38 @@ class ThemeInstallController extends Controller
     }
 
 
+    public function getInstalledThemes($serviceId)
+{
+    $service = Service::with('whmServer')->findOrFail($serviceId);
+    $ip = $service->whmServer->ip_address;
+    $port = env('SSH_PORT', '49999');
+    $cpUser = $service->whm_username;
+    $path = "/home/{$cpUser}/public_html/wp-content/themes";
+
+    $process = new \Symfony\Component\Process\Process([
+        '/usr/bin/ssh',
+        '-i', '/var/www/.ssh/id_rsa',
+        '-o', 'StrictHostKeyChecking=no',
+        '-p', $port,
+        "root@{$ip}",
+        "ls -1 {$path}"
+    ]);
+
+    $process->run();
+
+    if (!$process->isSuccessful()) {
+        \Log::error('❌ 테마 목록 조회 실패', [
+            'service_id' => $serviceId,
+            'error' => $process->getErrorOutput(),
+        ]);
+        return response()->json([]);
+    }
+
+    $installed = array_filter(explode("\n", trim($process->getOutput())));
+    return response()->json($installed);
+}
+
+
+
     
 }

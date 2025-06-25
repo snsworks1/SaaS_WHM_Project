@@ -174,11 +174,18 @@
                 </div>
 
                 <!-- 테마 관리 -->
-                <div x-show="tab === 'theme'" class="text-sm text-gray-700">
-                    <h3 class="font-semibold text-gray-800 mb-2">테마 관리</h3>
-                    @include('theme.index', ['themes' => \App\Models\Theme::all()])
+<div x-show="tab === 'theme'" class="text-sm text-gray-700">
+    <h3 class="font-semibold text-gray-800 mb-2">테마 관리</h3>
 
-                </div>
+    @if (!$wordpress_installed)
+    <div class="text-red-500 text-sm">
+        ❌ 워드프레스가 설치되어있지 않습니다. <br>
+        먼저 워드프레스를 설치해주세요.
+    </div>
+@else
+    @include('theme.index', ['themes' => \App\Models\Theme::all()])
+@endif
+</div>
 
                 <!-- 환불 -->
                 <div x-show="tab === 'refund'">
@@ -202,87 +209,92 @@
 </div>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const statusEl = document.getElementById('wp-status');
-            const spinner = document.getElementById('loadingSpinner');
-            const installForm = document.getElementById('installForm');
-            const formEl = document.getElementById('installWordPressForm');
-            const installBtn = document.getElementById('installBtn');
-            const progressArea = document.getElementById('progressArea');
-            const progressText = document.getElementById('progressText');
-            const progressBar = document.getElementById('progressBar');
-            const installResult = document.getElementById('installResult');
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const statusEl = document.getElementById('wp-status');
+    const spinner = document.getElementById('loadingSpinner');
+    const installForm = document.getElementById('installForm');
+    const formEl = document.getElementById('installWordPressForm');
+    const installBtn = document.getElementById('installBtn');
+    const progressArea = document.getElementById('progressArea');
+    const progressText = document.getElementById('progressText');
+    const progressBar = document.getElementById('progressBar');
+    const installResult = document.getElementById('installResult');
 
-            fetch('{{ route("services.checkWp", $service->id) }}', {
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                spinner.remove();
-                if (data.installed) {
-                    statusEl.innerHTML = `<span class="text-green-600">✅ 워드프레스 설치됨 (버전: <strong>${data.version}</strong>)</span>`;
-                } else {
-                    statusEl.innerHTML = `<span class="text-red-500">❌ 설치되지 않음</span>`;
-                    installForm.classList.remove('hidden');
-                }
-            })
-            .catch(err => {
-                spinner.remove();
-                statusEl.innerHTML = `<span class="text-red-500">⚠️ 상태 확인 실패</span>`;
-                console.error(err);
-            });
+    // ✅ DB 상태 기반 설치 여부 확인
+    fetch('{{ route("services.checkWp", $service->id) }}', {
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        spinner.remove();
+        if (data.installed) {
+            statusEl.innerHTML = `<span class="text-green-600">✅ 워드프레스 설치됨 (버전: <strong>${data.version}</strong>)</span>`;
+        } else {
+            statusEl.innerHTML = `<span class="text-red-500">❌ 설치되지 않음</span>`;
+            installForm.classList.remove('hidden');
+        }
+    })
+    .catch(err => {
+        spinner.remove();
+        statusEl.innerHTML = `<span class="text-red-500">⚠️ 상태 확인 실패</span>`;
+        console.error(err);
+    });
 
-            formEl.addEventListener('submit', function (e) {
-                e.preventDefault();
+    // ✅ 워드프레스 설치 요청
+    formEl.addEventListener('submit', function (e) {
+        e.preventDefault();
 
-                installBtn.disabled = true;
-                installBtn.innerText = '설치 중...';
-                progressText.innerText = '서버에 요청 중...';
-                progressBar.style.width = '10%';
-                progressArea.classList.remove('hidden');
-                installResult.classList.add('hidden');
+        installBtn.disabled = true;
+        installBtn.innerText = '설치 중...';
+        progressText.innerText = '서버에 요청 중...';
+        progressBar.style.width = '10%';
+        progressArea.classList.remove('hidden');
+        installResult.classList.add('hidden');
 
-                fetch(formEl.action, {
-                    method: 'POST',
-                    body: new FormData(formEl),
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    }
-                })
-                .then(res => res.text())
-                .then(() => {
-                    progressText.innerText = '압축 해제 중...';
-                    progressBar.style.width = '90%';
+        fetch(formEl.action, {
+            method: 'POST',
+            body: new FormData(formEl),
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(res => res.text())
+        .then(() => {
+            progressText.innerText = '압축 해제 중...';
+            progressBar.style.width = '90%';
 
-                    setTimeout(() => {
-                        installBtn.disabled = false;
-                        installBtn.innerText = '🚀 워드프레스 설치';
-                        progressBar.style.width = '100%';
-                        progressText.innerText = '설치 완료 ✅';
+            setTimeout(() => {
+                progressBar.style.width = '100%';
+                progressText.innerText = '설치 완료 ✅';
 
-                        installResult.className = 'bg-green-100 text-green-800';
-                        installResult.innerText = '워드프레스 설치가 완료되었습니다!';
-                        installResult.classList.remove('hidden');
-                        statusEl.innerHTML = `<span class="text-green-600">✅ 설치 완료됨</span>`;
-                    }, 2000);
-                })
-                .catch(err => {
-                    installBtn.disabled = false;
-                    installBtn.innerText = '🚀 워드프레스 설치';
-                    progressBar.style.width = '0%';
-                    progressText.innerText = '오류 발생';
+                installResult.className = 'bg-green-100 text-green-800';
+                installResult.innerText = '워드프레스 설치가 완료되었습니다!';
+                installResult.classList.remove('hidden');
 
-                    installResult.className = 'bg-red-100 text-red-800';
-                    installResult.innerText = '설치 중 오류가 발생했습니다.';
-                    installResult.classList.remove('hidden');
-                    console.error(err);
-                });
-            });
+                // ✅ 설치 후 페이지 리로드 → 테마 탭도 최신 상태 반영
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            }, 1500);
+        })
+        .catch(err => {
+            installBtn.disabled = false;
+            installBtn.innerText = '🚀 워드프레스 설치';
+            progressBar.style.width = '0%';
+            progressText.innerText = '오류 발생';
+
+            installResult.className = 'bg-red-100 text-red-800';
+            installResult.innerText = '설치 중 오류가 발생했습니다.';
+            installResult.classList.remove('hidden');
+            console.error(err);
         });
-    </script>
+    });
+});
+</script>
+
 
 
  

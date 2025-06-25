@@ -8,12 +8,25 @@ use Illuminate\Http\Request;
 
 class ThemeDisplayController extends Controller
 {
-   public function index(Service $service)
+public function index(Service $service)
 {
-    $themes = Theme::where('status', 'enabled')->get(); // ✅ 수정됨
+    \Log::info('🚀 ThemeDisplayController@index 진입', ['service_id' => $service->id]);
 
-    $installedThemes = app(ThemeService::class)->getInstalledThemes($service);
+    $themes = Theme::where('status', 'enabled')->get();
+    $themeService = app(\App\Services\ThemeService::class);
+    $installedFolders = $themeService->getInstalledThemes($service); // ⬅️ 여기 있어야 함
+
+    \Log::info('🔍 installedFolders', $installedFolders); // 디버깅용
+
+    $installedThemes = [];
+
+    foreach ($themes as $theme) {
+    $installedThemes[$theme->id] = in_array($theme->folder_name, $installedFolders);
+}
 
     return view('theme.index', compact('themes', 'service', 'installedThemes'));
 }
+
+    
+
 }

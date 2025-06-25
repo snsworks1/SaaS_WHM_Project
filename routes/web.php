@@ -146,6 +146,7 @@ Route::resource('themes', ThemeController::class);
 });
 
 Route::post('/user/themes/{service}/{theme}/install', [ThemeInstallController::class, 'install']);
+Route::get('/user/themes/{service}/installed', [ThemeInstallController::class, 'getInstalledThemes']);
 
 
 
