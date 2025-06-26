@@ -75,8 +75,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ->name('dashboard.payments.receipt');
 
     // 테마 페이지
-    Route::get('/services/{service}/themes', [App\Http\Controllers\ThemeDisplayController::class, 'index'])
-        ->name('services.themes.index');
+ 
         Route::post('/services/{service}/themes/{theme}/install', [ThemeInstallController::class, 'install'])
     ->name('user.themes.install')
     ->middleware('auth');

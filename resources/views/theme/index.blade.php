@@ -1,36 +1,18 @@
-<script>
-document.addEventListener('alpine:init', () => {
-    Alpine.store('installedThemes', {})
-
-    fetch(`/user/themes/{{ $service->id }}/installed`)
-        .then(res => res.json())
-        .then(installedFolders => {
-            Alpine.store('installedThemes', installedFolders.reduce((acc, folder) => {
-                acc[folder] = true;
-                return acc;
-            }, {}));
-        });
-});
-</script>
-
 <div class="space-y-4">
     <h3 class="text-lg font-semibold">🧅 사용 가능한 테마</h3>
 
-    
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse (collect($themes)->where('status', 'enabled') as $theme)
-            @php
-                $isInstalled = $installedThemes[$theme->id] ?? false;
-            @endphp
-
             <div
-x-data="themeCard(
-    {{ Js::from($theme->id) }},
-    {{ Js::from($service->id) }},
-    {{ Js::from($theme->name) }},
-    {{ Js::from($theme->screenshots ?? []) }}
-)"                class="border rounded-xl shadow p-4 bg-white"
-                x-init="startSlider()"
+                x-data="themeCard(
+                    {{ Js::from($theme->id) }},
+                    {{ Js::from($service->id) }},
+  {{ Js::from($theme->name) }},
+                       {{ Js::from($theme->name) }},
+                    {{ Js::from($theme->screenshots ?? []) }}
+                )"
+                x-init="init(); startSlider();"
+                class="border rounded-xl shadow p-4 bg-white"
             >
                 <p class="text-base font-semibold mb-2">테마 명 : {{ $theme->name }}</p>
                 <div class="border-b border-gray-200 mb-2"></div>
@@ -46,23 +28,20 @@ x-data="themeCard(
 
                 <p class="text-sm text-gray-500 mt-2">대상: {{ $theme->plan_type === 'both' ? 'Basic / Pro 공용' : ucfirst($theme->plan_type) }}</p>
 
-                <template x-if="isInstalled">
-    <button
-        class="mt-4 w-full py-2 rounded text-sm bg-green-500 text-white cursor-default opacity-80"
-        disabled
-    >
-        ✅ 설치됨
-    </button>
-</template>
-<template x-if="!isInstalled">
-    <button
-        :disabled="loading"
-        :class="buttonClass"
-        class="mt-4 w-full py-2 rounded text-sm"
-        x-text="buttonText"
-        @click="installTheme"
-    ></button>
-</template>
+                <template x-if="installed">
+                    <button class="mt-4 w-full py-2 rounded text-sm bg-gray-300 text-gray-700 cursor-not-allowed" disabled>
+                        ✅ 설치됨
+                    </button>
+                </template>
+                <template x-if="!installed">
+                    <button
+                        :disabled="loading"
+                        :class="buttonClass"
+                        class="mt-4 w-full py-2 rounded text-sm"
+                        x-text="buttonText"
+                        @click="installTheme"
+                    ></button>
+                </template>
 
                 <!-- 모달 -->
                 <template x-if="showModal">
@@ -80,9 +59,9 @@ x-data="themeCard(
                             <div class="flex space-x-2 justify-center mt-2">
                                 <template x-for="(img, i) in screenshots" :key="i">
                                     <img :src="'/storage/' + img"
-                                         @click="active = i"
-                                         class="w-28 h-20 object-cover rounded cursor-pointer border"
-                                         :class="{ 'ring-2 ring-blue-500': i === active }" />
+                                        @click="active = i"
+                                        class="w-28 h-20 object-cover rounded cursor-pointer border"
+                                        :class="{ 'ring-2 ring-blue-500': i === active }" />
                                 </template>
                             </div>
 
@@ -97,32 +76,65 @@ x-data="themeCard(
     </div>
 </div>
 
-<script src="//unpkg.com/alpinejs" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
-function themeCard(themeId, serviceId, folderName, screenshots) {
+function themeCard(themeId, serviceId, folderName, themeName, screenshots = []) {
     return {
+        installed: false,
+        loading: false,
+        buttonText: '🚀 설치',
+        buttonClass: 'bg-blue-600 text-white hover:bg-blue-700',
+        screenshots: screenshots,
         active: 0,
         showModal: false,
         interval: null,
-        screenshots: screenshots,
-        loading: false,
 
-        get isInstalled() {
-            return Alpine.store('installedThemes')[folderName] ?? false;
-        },
+        init() {
+    const waitForMap = () => {
+        if (window.themeInstalledMap && Object.keys(window.themeInstalledMap).length > 0) {
+            const map = window.themeInstalledMap;
+            this.installed = map[folderName] === true;
+            this.buttonText = this.installed ? '✅ 설치됨' : '🚀 설치';
+            this.buttonClass = this.installed
+                ? 'bg-gray-300 text-gray-700 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700';
+        } else {
+            setTimeout(waitForMap, 100); // 설치 목록이 준비될 때까지 대기
+        }
+    };
+    waitForMap();
+},
 
-        get buttonText() {
-            if (this.loading) return '⏳ 설치중...';
-            return this.isInstalled ? '✅ 설치 완료' : '🚀 설치';
-        },
+        installTheme() {
+            if (this.installed || this.loading) return;
+            this.loading = true;
+            this.buttonText = '⏳ 설치중...';
 
-        get buttonClass() {
-            if (this.isInstalled || this.loading) {
-                return 'bg-gray-500 text-white cursor-not-allowed';
-            }
-            return 'bg-blue-600 text-white hover:bg-blue-700';
+            fetch(`/themes/${themeId}/install`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ service_id: serviceId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    this.installed = true;
+                    this.buttonText = '✅ 설치됨';
+                    this.buttonClass = 'bg-gray-300 text-gray-700 cursor-not-allowed';
+                } else {
+                    this.buttonText = '❌ 실패';
+                    this.buttonClass = 'bg-red-500 text-white';
+                }
+            })
+            .catch(() => {
+                this.buttonText = '❌ 실패';
+                this.buttonClass = 'bg-red-500 text-white';
+            })
+            .finally(() => {
+                this.loading = false;
+            });
         },
 
         startSlider() {
@@ -133,64 +145,46 @@ function themeCard(themeId, serviceId, folderName, screenshots) {
                 }, 3000);
             }
         },
+
         stopSlider() {
             if (this.interval) clearInterval(this.interval);
         },
+
         prevSlide() {
             this.active = (this.active - 1 + this.screenshots.length) % this.screenshots.length;
         },
+
         nextSlide() {
             this.active = (this.active + 1) % this.screenshots.length;
         },
+
         closeModal() {
             this.showModal = false;
             this.stopSlider();
-        },
-
-        installTheme() {
-            if (this.isInstalled || this.loading) return;
-            this.loading = true;
-
-            fetch(`/user/themes/${serviceId}/${themeId}/install`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json',
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                this.loading = false;
-
-                if (data.status === 'success' || data.status === 'exists') {
-                    Swal.fire({
-                        icon: data.status === 'success' ? 'success' : 'info',
-                        title: data.status === 'success' ? '설치 완료' : '이미 설치됨',
-                        text: data.message || '테마 설치가 완료되었습니다.',
-                        confirmButtonColor: '#3085d6',
-                    });
-
-                    // 설치됨 상태 갱신
-                    Alpine.store('installedThemes')[folderName] = true;
-
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: '설치 실패',
-                        text: data.message || '문제가 발생했습니다.',
-                    });
-                }
-            })
-            .catch(err => {
-                console.error('Fetch Error:', err);
-                Swal.fire({
-                    icon: 'error',
-                    title: '서버 오류',
-                    text: '네트워크 또는 서버 오류가 발생했습니다.',
-                });
-                this.loading = false;
-            });
         }
     };
 }
 </script>
+
+<script>
+document.addEventListener('alpine:init', () => {
+    window.themeInstalledMap = {};
+
+    fetch(`/user/themes/{{ $service->id }}/installed`)
+        .then(res => res.json())
+        .then(installedFolders => {
+            installedFolders.forEach(name => {
+                themeInstalledMap[name.trim()] = true;
+            });
+
+            console.log('✅ 설치된 테마 목록:', themeInstalledMap);
+
+            // 여기서 수동으로 모든 Alpine 컴포넌트를 refresh (강제 초기화)
+            document.querySelectorAll('[x-data]').forEach(el => {
+                el.__x && el.__x.updateElements(el);
+            });
+        });
+});
+</script>
+
+<script src="//unpkg.com/alpinejs" defer></script>

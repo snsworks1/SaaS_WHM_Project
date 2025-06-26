@@ -112,15 +112,23 @@ class ThemeInstallController extends Controller
 
     $process->run();
 
+    // ✅ 항상 정의되도록 초기화
+    $installed = [];
+
     if (!$process->isSuccessful()) {
         \Log::error('❌ 테마 목록 조회 실패', [
             'service_id' => $serviceId,
             'error' => $process->getErrorOutput(),
         ]);
-        return response()->json([]);
+    } else {
+        $installed = array_filter(explode("\n", trim($process->getOutput())));
+
+        \Log::info('🚀 getInstalledThemes 결과', [
+            'service_id' => $serviceId,
+            'installed' => $installed,
+        ]);
     }
 
-    $installed = array_filter(explode("\n", trim($process->getOutput())));
     return response()->json($installed);
 }
 
