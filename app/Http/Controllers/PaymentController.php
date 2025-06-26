@@ -109,6 +109,8 @@ class PaymentController extends Controller
                 'plan_id'     => $plan->id,
                 'order_id'    => $orderId,
                 'payment_key' => $paymentKey,
+                    'method'      => $response['method'] ?? null, // ✅ 추가
+
                 'amount'      => $totalAmount,
                 'status'      => 'PAID',
                 'approved_at' => now(),

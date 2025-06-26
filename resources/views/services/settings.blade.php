@@ -66,7 +66,7 @@
 
                     {{-- 30일 업타임 그래프 --}}
 <div class="mt-6">
-    <h2 class="font-semibold mb-2">📊 서버 업타임 (최근 30일)</h2>
+    <h2 class="font-semibold mb-2">📊 서버 업타임 (최근 30일)  ※6월26일 이전데이터는 더미 데이터입니다.</h2>
     <div class="flex flex-wrap gap-1">
         @foreach ($uptimeData as $data)
             <div class="relative group w-5 h-5 rounded-sm"

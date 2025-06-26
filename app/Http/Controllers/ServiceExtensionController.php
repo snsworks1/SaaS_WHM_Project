@@ -117,6 +117,8 @@ public function confirm(Request $request, $id)
     'amount'      => $amount,
     'order_id'    => $orderId,
     'payment_key' => $paymentKey,
+        'method'      => $response['method'] ?? null, // ✅ 결제 수단 추가
+
     'status'      => 'PAID',
     'start_at'    => $previousExpiredAt, // ✅ 올바른 기준값 반영
 ]);

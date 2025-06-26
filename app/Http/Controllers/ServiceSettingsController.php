@@ -180,14 +180,18 @@ if ($service->plan->price == 0 || (!$calc['isEligible'] && $calc['durationDays']
 
     \Log::info('📩 Toss 환불 응답 수신', ['result' => $result]);
 
+  
+
+   if (isset($result['status']) && in_array($result['status'], ['CANCELED', 'PARTIAL_CANCELED'])) {
     $service->payment->update([
-        'status' => 'CANCELED',
+        'status' => $result['status'],
         'refund_reason' => $request->reason ?? '사용자 환불 요청',
+            'refunded_amount' => $calc['refundable'], // ← 이 줄 추가
+
     ]);
 
-    if (isset($result['status']) && in_array($result['status'], ['CANCELED', 'PARTIAL_CANCELED'])) {
-    $service->payment->update(['status' => $result['status']]); // 실제 상태 저장
     $service->update(['status' => 'canceled']);
+
     return back()->with('success', '환불이 완료되었습니다.');
 }
 

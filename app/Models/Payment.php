@@ -7,16 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 class Payment extends Model
 {
     protected $fillable = [
-        'user_id',
-        'plan_id',
-        'order_id',
-        'payment_key',
-        'amount',
-        'status',
-        'approved_at',
-        'service_id',
-        'start_at',
-    ];
+    'user_id',
+    'service_id',
+    'plan_id',
+    'order_id',
+    'payment_key',
+        'method',             // ✅ 추가
+
+    'amount',
+    'status',
+    'refund_reason',
+    'refunded_amount', // ✅ 이 줄 추가
+    'receipt_url',
+    'approved_at',
+    'start_at',
+];
 
     public function user()
     {
