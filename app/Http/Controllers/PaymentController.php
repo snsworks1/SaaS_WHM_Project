@@ -66,7 +66,7 @@ class PaymentController extends Controller
                 throw new \Exception('WHM 서버 용량 부족');
             }
 
-            $domain = "$username.hostyle.me";
+            $domain = "$username.hostylefree.xyz";
             $whm = new WhmApiService($server);
             $whmResponse = $whm->createAccount($domain, $username, $password, $plan->name, $user->email);
 

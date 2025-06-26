@@ -40,14 +40,49 @@
             <!-- 탭 콘텐츠 -->
             <div class="pt-4">
 
-                <!-- DB 정보 -->
-                <div x-show="tab === 'db'" class="text-sm text-gray-700 space-y-1">
-                    <h3 class="font-semibold text-gray-800 mb-2">데이터베이스 정보</h3>
-                    <p><span class="font-medium">DB 이름:</span> {{ $service->whm_username }}_db</p>
-                    <p><span class="font-medium">DB 유저:</span> {{ $service->whm_username }}_admin</p>
-                    <p><span class="font-medium">DB 비밀번호:</span> (WHM 계정 비밀번호와 동일)</p>
-                </div>
+<!-- DB 정보 -->
+<div x-show="tab === 'db'" class="text-sm text-gray-700 space-y-4">
+    <div>
+        <h3 class="font-semibold text-gray-800 mb-2">데이터베이스 정보</h3>
+        <p><span class="font-medium">DB 이름:</span> {{ $service->whm_username }}_db</p>
+        <p><span class="font-medium">DB 유저:</span> {{ $service->whm_username }}_admin</p>
+        <p><span class="font-medium">DB 비밀번호:</span> (WHM 계정 비밀번호와 동일)</p>
+    </div>
 
+{{-- 실시간 상태 --}}
+<div class="bg-white rounded shadow p-4 mb-4">
+    <h2 class="text-sm font-bold">⚡ 실시간 서버 상태</h2>
+    <div class="mt-2 text-sm">
+        현재 상태:
+        @if ($latestStatus === 'up')
+            <span class="text-green-600 font-semibold">정상</span>
+        @elseif ($latestStatus === 'down')
+            <span class="text-red-600 font-semibold">장애</span>
+        @else
+            <span class="text-gray-600">정보 없음</span>
+        @endif
+    </div>
+    <p class="text-xs text-gray-500 mt-1">마지막 체크: {{ $latestCollectedAt ? \Carbon\Carbon::parse($latestCollectedAt)->diffForHumans() : '-' }}</p>
+
+                    {{-- 30일 업타임 그래프 --}}
+<div class="mt-6">
+    <h2 class="font-semibold mb-2">📊 서버 업타임 (최근 30일)</h2>
+    <div class="flex flex-wrap gap-1">
+        @foreach ($uptimeData as $data)
+            <div class="relative group w-5 h-5 rounded-sm"
+                 style="background-color: {{ $data['percent'] >= 90 ? '#22c55e' : ($data['percent'] >= 80 ? '#f97316' : '#ef4444') }};">
+                <div class="absolute z-10 hidden group-hover:block bg-gray-800 text-white text-xs rounded px-2 py-1 -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                    {{ $data['date'] }}: {{ $data['percent'] }}%
+                </div>
+            </div>
+        @endforeach
+    </div>
+</div>
+
+</div>
+
+
+</div>
                 <!-- 비밀번호 변경 -->
                 <div x-show="tab === 'password'" class="text-sm">
                     <h3 class="font-semibold text-gray-800 mb-2">cPanel 비밀번호 변경</h3>
@@ -346,5 +381,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 </script>
 
+
+
+<script src="https://unpkg.com/alpinejs" defer></script>
 
 </x-app-layout>

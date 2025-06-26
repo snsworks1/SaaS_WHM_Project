@@ -15,22 +15,63 @@ use Carbon\Carbon;
 use App\Services\RefundCalculator;
 use App\Services\WhmApiService;
 use App\Notifications\CpanelPasswordChanged;
+use App\Http\Controllers\Controller;
+use App\Models\WhmUptimeLog;
 
 
 
 
 class ServiceSettingsController extends Controller
 {
-    public function settings($id)
-    {
-        $service = Service::with(['plan', 'user'])->findOrFail($id);
-        $wordpressInstalled = $service->wordpress_installed ?? false;
+public function settings($id)
+{
+    $service = Service::with(['plan', 'user'])->findOrFail($id);
+    $wordpressInstalled = $service->wordpress_installed ?? false;
 
-        return view('services.settings', [
-            'service' => $service,
-            'wordpress_installed' => $wordpressInstalled,
-        ]);
+    $serverId = $service->whm_server_id;
+
+    // ✅ 실시간 상태
+    $latestLog = WhmUptimeLog::where('whm_server_id', $serverId)
+        ->latest('collected_at')
+        ->first();
+
+    $latestStatus = $latestLog?->status ?? 'unknown';
+    $latestCollectedAt = $latestLog?->collected_at;
+
+    // ✅ 30일간 로그 그룹핑
+    $rawLogs = WhmUptimeLog::where('whm_server_id', $serverId)
+        ->where('collected_at', '>=', now()->subDays(30))
+        ->get()
+        ->groupBy(function ($log) {
+            return \Carbon\Carbon::parse($log->collected_at)->format('Y-m-d');
+        });
+
+    $uptimeData = [];
+
+    foreach ($rawLogs as $date => $logs) {
+        $total = $logs->count();
+        $up = $logs->where('status', 'up')->count();
+        $uptimePercent = $total > 0 ? round(($up / $total) * 100, 1) : 0;
+        $uptimeData[] = [
+            'date' => $date,
+            'percent' => $uptimePercent,
+        ];
     }
+
+    return view('services.settings', [
+        'service' => $service,
+        'wordpress_installed' => $wordpressInstalled,
+        'uptimeData' => collect($uptimeData)->sortBy('date')->values(),
+
+        // ✅ 새로 추가한 항목들
+        'latestStatus' => $latestStatus,
+        'latestCollectedAt' => $latestCollectedAt,
+    ]);
+}
+
+
+
+
 
 
 public function checkWordPress($id)

@@ -27,4 +27,10 @@ class WhmServer extends Model
     {
         return $this->hasMany(Service::class, 'whm_server_id');
     }
+
+    public function uptimeLogs()
+{
+    return $this->hasMany(WhmUptimeLog::class);
+}
+
 }
