@@ -1,4 +1,6 @@
 <x-guest-layout>
+        @section('title', '회원 가입 - Hostyle')
+
     <x-authentication-card>
         <x-slot name="logo">
             <x-authentication-card-logo />

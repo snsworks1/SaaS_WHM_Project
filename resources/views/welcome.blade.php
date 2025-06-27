@@ -591,6 +591,17 @@ setInterval(() => {
   gtag('config', 'G-Y7BBE8FQ2H');
 </script>
 
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-17272418719"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-17272418719');
+</script>
+
+
 <!-- Channel Plugin Load -->
 <script>
 (function(){

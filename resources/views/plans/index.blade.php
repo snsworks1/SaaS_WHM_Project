@@ -1,5 +1,9 @@
+
+
 <!-- 상단 레이아웃 시작 -->
 <x-app-layout>
+    @section('title', '서비스 신청 - Hostyle')
+
     <x-slot name="header">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" />
         <h2 class="font-semibold text-lg sm:text-xl text-gray-800 leading-tight">서비스 신청</h2>

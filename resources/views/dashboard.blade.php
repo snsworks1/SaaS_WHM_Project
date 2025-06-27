@@ -1,4 +1,6 @@
 <x-app-layout>
+        @section('title', '대시보드 - Hostyle')
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">내 서비스 목록</h2>
     </x-slot>

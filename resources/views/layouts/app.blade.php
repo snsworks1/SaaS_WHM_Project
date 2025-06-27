@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Hostyle 웹호스팅') }}</title>
+<title>@yield('title', config('app.name', 'Hostyle 웹호스팅'))</title>
 
         <!-- 파비콘 -->
 <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/IconOnly_Transparent.png') }}">

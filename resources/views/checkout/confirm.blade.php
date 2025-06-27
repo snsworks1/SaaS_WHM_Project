@@ -1,4 +1,6 @@
 <x-app-layout>
+        @section('title', '결제 완료 - Hostyle')
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">결제 완료</h2>
     </x-slot>
