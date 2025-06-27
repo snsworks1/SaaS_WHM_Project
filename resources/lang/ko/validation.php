@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 return [
+    'company_name.required_if' => '사업자 고객일 경우 상호는 필수 항목입니다.',
+
     'accepted'               => ':attribute을(를) 동의해야 합니다.',
     'accepted_if'            => ':attribute을(를) :other이(가) :value이면 동의해야 합니다.',
     'active_url'             => ':attribute은(는) 유효한 URL이 아닙니다.',

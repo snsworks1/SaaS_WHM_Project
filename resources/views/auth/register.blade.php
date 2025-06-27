@@ -10,6 +10,23 @@
         <form method="POST" action="{{ route('register') }}">
             @csrf
 
+        <!-- 고객 유형 선택 -->
+<div class="mt-6">
+    <label class="block font-medium text-sm text-gray-700 mb-2">고객 유형</label>
+    <div class="grid grid-cols-2 gap-4">
+        <div onclick="selectCustomerType('personal')" id="card-personal"
+            class="cursor-pointer border rounded p-4 text-center hover:border-indigo-500">
+            🙋 개인 고객
+        </div>
+        <div onclick="selectCustomerType('business')" id="card-business"
+            class="cursor-pointer border rounded p-4 text-center hover:border-indigo-500">
+            🏢 사업자 고객
+        </div>
+    </div>
+    <input type="hidden" name="customer_type" id="customer_type" value="personal">
+</div>
+
+
             <div>
                 <x-label for="name" value="{{ __('이름') }}" />
                 <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
@@ -41,6 +58,57 @@
                 <x-label for="password_confirmation" value="{{ __('패스워드 재확인') }}" />
                 <x-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
             </div>
+
+
+<!-- 사업자 정보 필드 (초기에는 숨김) -->
+<div id="business-fields" class="mt-6 hidden space-y-4">
+    <!-- 구분 라벨 -->
+    <div class="border-b border-gray-300 pb-2 mb-2">
+        <h3 class="text-md font-semibold text-gray-800">📄 사업자 전용 입력 항목</h3>
+        <p class="text-sm text-gray-500 mt-1">※ 사업자 고객만 입력해주세요.</p>
+    </div>
+
+    <div>
+        <label class="block font-medium text-sm text-gray-700">상호</label>
+        <input type="text" name="company_name" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">
+    </div>
+    <div>
+        <label class="block font-medium text-sm text-gray-700">사업자번호</label>
+        <input type="text" name="business_number" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" placeholder="예: 123-45-67890">
+    </div>
+    
+     <!-- 주소 검색 -->
+<div>
+    <label class="block font-medium text-sm text-gray-700">사업자 주소</label>
+    <div class="flex gap-2 mb-2">
+        <input type="text" id="address_base" class="w-full border-gray-300 rounded-md shadow-sm" placeholder="주소 검색" readonly>
+        <button type="button" onclick="execDaumPostcode()"
+            class="px-3 py-2 text-sm bg-indigo-500 text-white rounded hover:bg-indigo-600">
+            주소 찾기
+        </button>
+    </div>
+
+    <input type="text" id="address_detail" class="w-full border-gray-300 rounded-md shadow-sm mb-2" placeholder="상세 주소 입력">
+    
+    <!-- 실제로 서버에 전송되는 주소 -->
+    <input type="hidden" id="business_address" name="business_address">
+</div>
+
+
+    <div>
+        <label class="block font-medium text-sm text-gray-700">업태</label>
+        <input type="text" name="business_type" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">
+    </div>
+    <div>
+        <label class="block font-medium text-sm text-gray-700">종목</label>
+        <input type="text" name="business_item" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">
+    </div>
+    <div>
+        <label class="block font-medium text-sm text-gray-700">계산서 발행 이메일</label>
+        <input type="email" name="invoice_email" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">
+    </div>
+</div>
+
 
             <!-- 개인정보 동의 -->
             <div class="mt-6 text-sm text-gray-700">
@@ -87,7 +155,7 @@
                     {{ __('로그인 페이지 돌아가기') }}
                 </a>
 
-                <x-button class="ms-4">
+<x-button id="registerBtn" class="ms-4">
                     {{ __('회원가입') }}
                 </x-button>
             </div>
@@ -104,5 +172,77 @@
                 });
             });
         </script>
+
+<script>
+    function selectCustomerType(type) {
+        document.getElementById('customer_type').value = type;
+
+        const personalCard = document.getElementById('card-personal');
+        const businessCard = document.getElementById('card-business');
+        const businessFields = document.getElementById('business-fields');
+
+        const requiredFields = [
+            'company_name',
+            'business_number',
+            'business_address',
+            'business_type',
+            'business_item',
+            'invoice_email'
+        ];
+
+        if (type === 'business') {
+            businessFields.classList.remove('hidden');
+            businessCard.classList.add('border-indigo-500', 'bg-indigo-50');
+            personalCard.classList.remove('border-indigo-500', 'bg-indigo-50');
+
+            // 필수값 추가
+            requiredFields.forEach(id => {
+                const el = document.getElementsByName(id)[0];
+                if (el) el.setAttribute('required', 'required');
+            });
+        } else {
+            businessFields.classList.add('hidden');
+            personalCard.classList.add('border-indigo-500', 'bg-indigo-50');
+            businessCard.classList.remove('border-indigo-500', 'bg-indigo-50');
+
+            // 필수값 제거
+            requiredFields.forEach(id => {
+                const el = document.getElementsByName(id)[0];
+                if (el) el.removeAttribute('required');
+            });
+        }
+    }
+</script>
+
+<!-- Daum 주소 API 스크립트 -->
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
+<script>
+    function execDaumPostcode() {
+        new daum.Postcode({
+            oncomplete: function (data) {
+                let fullAddr = data.address;
+                if (data.addressType === 'R') {
+                    if (data.bname !== '') fullAddr += ' ' + data.bname;
+                    if (data.buildingName !== '') fullAddr += ' (' + data.buildingName + ')';
+                }
+                document.getElementById('address_base').value = fullAddr;
+                updateFullBusinessAddress();
+            }
+        }).open();
+    }
+
+    // 상세 주소 입력 시에도 병합 처리
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('address_detail').addEventListener('input', updateFullBusinessAddress);
+    });
+
+    function updateFullBusinessAddress() {
+        const base = document.getElementById('address_base').value || '';
+        const detail = document.getElementById('address_detail').value || '';
+        const full = base + (detail ? ' ' + detail : '');
+        document.getElementById('business_address').value = full;
+    }
+</script>
     </x-authentication-card>
 </x-guest-layout>

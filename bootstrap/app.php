@@ -12,9 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // routes/middleware.php 불러오기
         $middleware->alias(require __DIR__.'/../routes/middleware.php');
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
-    })->create();
+        // 아무것도 넣지 않아도 App\Exceptions\Handler 자동 인식
+    })
+    ->create();

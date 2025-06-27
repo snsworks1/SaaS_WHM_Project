@@ -32,13 +32,21 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     protected $fillable = [
-      'name',
+    'name',
     'email',
     'phone',
     'password',
     'marketing_opt_in',
     'marketing_opt_in_at',
-    ];
+    'customer_type',          // 개인 / 사업자
+    'company_name',           // 상호
+    'business_number',        // 사업자번호
+    'business_address',       // 주소
+    'business_type',          // 업태
+    'business_item',          // 종목
+    'invoice_email',          // 계산서 발행 이메일
+];
+
 
     /**
      * The attributes that should be hidden for serialization.

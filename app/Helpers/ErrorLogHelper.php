@@ -15,6 +15,7 @@ class ErrorLogHelper
         ?int $serverId = null,
         ?string $whmUsername = null
     ): void {
+        try {
         ErrorLog::create([
             'level'        => $level,
             'type'         => $type,
@@ -23,8 +24,11 @@ class ErrorLogHelper
             'occurred_at'  => Carbon::now(),
             'server_id'    => $serverId,
             'whm_username' => $whmUsername,
-            'resolved'     => false,
+            'resolved'     => 0, // 👈 수정
             'resolved_at'  => null,
         ]);
+    } catch (\Throwable $e) {
+        \Log::error('❌ [ErrorLogHelper::log] DB insert 실패: ' . $e->getMessage());
+    }
     }
 }
