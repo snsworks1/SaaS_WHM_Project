@@ -1,5 +1,6 @@
-<div class="flex justify-center mb-10">
-    <div class="flex items-center space-x-10">
+<div class="flex justify-center mb-6 sm:mb-10">
+    <div class="flex items-center overflow-x-auto max-w-full px-2 sm:px-0 space-x-2 sm:space-x-6">
+
 
         {{-- Step 1 --}}
         <div class="flex flex-col items-center">

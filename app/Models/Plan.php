@@ -13,13 +13,21 @@ class Plan extends Model
     protected $table = 'plans';
 
     // 수정 가능한 컬럼 지정 (mass assignment)
-    protected $fillable = [
-        'name',
-        'price',
-        'disk_size',
-        'description',  // 만약 설명 컬럼이 있으면
-        // 다른 컬럼 추가 가능
-    ];
+protected $fillable = [
+    'name',
+    'price',
+    'disk_size',
+    'description',
+    'ftp_accounts',
+    'email_accounts',
+    'sql_databases',
+    'mailing_lists',
+    'max_email_per_hour',
+    'email_quota',
+    'bandwidth', // ✅ 추가 필요
+        'addon_domains', // ✅
+    'subdomains',    // ✅
+];
 
     public function services()
 {

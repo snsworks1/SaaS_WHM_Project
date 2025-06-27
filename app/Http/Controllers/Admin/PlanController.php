@@ -62,18 +62,21 @@ class PlanController extends Controller
 
     private function validateRequest($request)
     {
-        return $request->validate([
-            'name' => 'required',
-            'price' => 'required|numeric',
-            'disk_size' => 'required|integer',
-            'description' => 'nullable',
-            'ftp_accounts' => 'required|integer',
-            'email_accounts' => 'required|integer',
-            'sql_databases' => 'required|integer',
-            'mailing_lists' => 'required|integer',
-            'max_email_per_hour' => 'required|integer',
-            'email_quota' => 'required|integer',
-        ]);
+    return $request->validate([
+        'name' => 'required',
+        'price' => 'required|numeric',
+        'disk_size' => 'required|integer',
+        'description' => 'nullable',
+        'ftp_accounts' => 'required|integer',
+        'email_accounts' => 'required|integer',
+        'sql_databases' => 'required|integer',
+        'mailing_lists' => 'required|integer',
+        'max_email_per_hour' => 'required|integer',
+        'email_quota' => 'required|integer',
+        'bandwidth' => 'required|integer', // 추가
+        'addon_domains' => 'required|integer',
+'subdomains' => 'required|integer',
+    ]);
     }
 
     public function destroy($id)

@@ -67,6 +67,25 @@
                 <input type="number" name="email_quota" class="w-full border rounded p-2" value="500" required>
             </div>
 
+                <!-- 데이터베이스 수 -->
+
+
+    <!-- 트래픽 제한 -->
+    <div>
+        <label class="block font-medium mb-1">트래픽 제한 (GB, 0 입력 시 무제한)</label>
+<input type="number" name="bandwidth" class="w-full border rounded p-2" value="{{ old('bandwidth', 0) }}" required>
+    </div>
+
+    <div>
+    <label class="block font-medium mb-1">도메인 연결 수 (0 = 불가)</label>
+    <input type="number" name="addon_domains" class="w-full border rounded p-2" value="{{ old('addon_domains', 0) }}" required>
+</div>
+
+<div>
+    <label class="block font-medium mb-1">서브도메인 수 (0 = 불가)</label>
+    <input type="number" name="subdomains" class="w-full border rounded p-2" value="{{ old('subdomains', 0) }}" required>
+</div>
+
         </div>
 
         <div class="mt-6">

@@ -1,90 +1,78 @@
+<!-- 상단 레이아웃 시작 -->
 <x-app-layout>
     <x-slot name="header">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-Z8Aj8el0OZ..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">서비스 신청</h2>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" />
+        <h2 class="font-semibold text-lg sm:text-xl text-gray-800 leading-tight">서비스 신청</h2>
     </x-slot>
 
-    <div class="py-12 max-w-4xl mx-auto">
+    <div class="py-8 px-4 sm:py-12 sm:px-0 max-w-4xl mx-auto">
         <form id="multiStepForm" method="POST">
             @csrf
 
             {{-- Step 1: 플랜 선택 --}}
-<div id="step-1">
-    @include('components.upgrade-progress-5', ['step' => 1])
-    <h3 class="text-xl font-bold mb-6 text-center">1단계: 플랜 선택</h3>
+            <div id="step-1">
+                @include('components.upgrade-progress-5', ['step' => 1])
+                <h3 class="text-lg sm:text-xl font-bold mb-6 text-center">1단계: 플랜 선택</h3>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        @foreach ($plans as $plan)
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    @foreach ($plans as $plan)
+                        @if ($plan->name === 'test2' && $plan->name === 'test' && (!auth()->check() || auth()->user()->email !== 'snsworks1@gmail.com'))
+                            @continue
+                        @endif
 
-    {{-- 테스트 플랜은 특정 사용자만 보이게 --}}
-    @if ($plan->name === 'test2' && $plan->name === 'test' && (!auth()->check() || auth()->user()->email !== 'snsworks1@gmail.com'))
-        @continue
-    @endif
+                        <label class="block cursor-pointer">
+                            <input type="radio" name="plan_id" value="{{ $plan->id }}"
+                                   data-price="{{ $plan->price }}"
+                                   data-name="{{ $plan->name }}"
+                                   data-disk="{{ $plan->disk_size }}"
+                                   class="peer hidden" required>
 
-            <label class="cursor-pointer block">
-                <input type="radio" name="plan_id" value="{{ $plan->id }}"
-       data-price="{{ $plan->price }}"
-       data-name="{{ $plan->name }}"
-       data-disk="{{ $plan->disk_size }}"
-       class="peer hidden" required>
+                            <div class="p-4 sm:p-6 border rounded-xl bg-white transition-all peer-checked:border-blue-600 peer-checked:ring-2 peer-checked:ring-blue-200 hover:shadow-xl">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+                                    <div class="text-base sm:text-lg font-bold text-gray-900">{{ $plan->name }} 플랜</div>
+                                    <div class="text-right text-blue-700 font-semibold text-sm sm:text-base">
+                                        ₩{{ number_format($plan->price) }} / 월
+                                    </div>
+                                </div>
 
-                <div class="p-6 border rounded-xl bg-white transition-all peer-checked:border-blue-600 peer-checked:ring-2 peer-checked:ring-blue-200 hover:shadow-xl">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="text-xl font-bold text-gray-900">{{ $plan->name }} 플랜</div>
-                        <div class="text-right text-base text-blue-700 font-semibold">
-                            ₩{{ number_format($plan->price) }} / 월
-                        </div>
-                    </div>
-
- <ul class="mt-4 space-y-3 text-sm text-gray-700">
-    @if ($plan->name === 'basic')
-        <li class="flex items-center gap-2"><i class="fas fa-hdd text-blue-600"></i> 5GB SSD 저장공간</li>
-        <li class="flex items-center gap-2"><i class="fas fa-tachometer-alt text-blue-600"></i> 월 30GB 트래픽</li>
-        <li class="flex items-center gap-2"><i class="fab fa-wordpress text-blue-600"></i> WordPress 자동설치</li>
-        <li class="flex items-center gap-2"><i class="fas fa-database text-blue-600"></i> DB 1개 생성 가능</li>
-        <li class="flex items-center gap-2"><i class="fas fa-globe text-blue-600"></i> 도메인 1개 연결 가능</li>
-        <li class="flex items-center gap-2"><i class="fas fa-palette text-blue-600"></i> 템플릿 기본 제공</li>
-        <li class="flex items-center gap-2"><i class="fas fa-shield-alt text-blue-600"></i> 보안 및 캐시 최적화 포함</li>
-        <li class="flex items-center gap-2"><i class="fas fa-shield-halved text-blue-600"></i> DDoS 고급 보호</li>
-        <!-- 빈 항목으로 높이 맞춤 -->
-        <li class="invisible h-5"></li>
-  
-    @elseif ($plan->name === 'pro')
-        <li class="flex items-center gap-2"><i class="fas fa-hdd text-purple-600"></i> 20GB SSD 저장공간</li>
-        <li class="flex items-center gap-2"><i class="fas fa-infinity text-purple-600"></i> 무제한 트래픽</li>
-        <li class="flex items-center gap-2"><i class="fab fa-wordpress text-purple-600"></i> WordPress 자동설치</li>
-        <li class="flex items-center gap-2"><i class="fas fa-database text-purple-600"></i> DB 3개 생성 가능</li>
-        <li class="flex items-center gap-2"><i class="fas fa-globe text-purple-600"></i> 도메인 3개 연결 가능</li>
-        <li class="flex items-center gap-2"><i class="fas fa-star text-purple-600"></i> 프리미엄 템플릿 전체 제공</li>
-        <li class="flex items-center gap-2"><i class="fas fa-rocket text-purple-600"></i> 고속 캐시 및 성능 최적화</li>
-        <li class="flex items-center gap-2"><i class="fas fa-shield-alt text-purple-600"></i> 강화된 보안 및 캐시</li>
-        <li class="flex items-center gap-2"><i class="fas fa-shield-halved text-purple-600"></i> DDoS 고급 보호</li>
-    @endif
-</ul>
-
+                                <ul class="mt-4 space-y-2 text-sm text-gray-700">
+                                    @if ($plan->name === 'basic')
+                                        <li class="flex items-center gap-2"><i class="fas fa-hdd text-blue-600"></i> 5GB SSD 저장공간</li>
+                                        <li class="flex items-center gap-2"><i class="fas fa-tachometer-alt text-blue-600"></i> 월 30GB 트래픽</li>
+                                        <li class="flex items-center gap-2"><i class="fab fa-wordpress text-blue-600"></i> WordPress 자동설치</li>
+                                        <li class="flex items-center gap-2"><i class="fas fa-database text-blue-600"></i> DB 1개 생성 가능</li>
+                                        <li class="flex items-center gap-2"><i class="fas fa-globe text-blue-600"></i> 도메인 1개 연결 가능</li>
+                                        <li class="flex items-center gap-2"><i class="fas fa-palette text-blue-600"></i> 템플릿 기본 제공</li>
+                                        <li class="flex items-center gap-2"><i class="fas fa-shield-alt text-blue-600"></i> 보안 및 캐시 최적화 포함</li>
+                                        <li class="flex items-center gap-2"><i class="fas fa-shield-halved text-blue-600"></i> DDoS 고급 보호</li>
+                                        <li class="invisible h-5"></li>
+                                    @elseif ($plan->name === 'pro')
+                                        <li class="flex items-center gap-2"><i class="fas fa-hdd text-purple-600"></i> 20GB SSD 저장공간</li>
+                                        <li class="flex items-center gap-2"><i class="fas fa-infinity text-purple-600"></i> 무제한 트래픽</li>
+                                        <li class="flex items-center gap-2"><i class="fab fa-wordpress text-purple-600"></i> WordPress 자동설치</li>
+                                        <li class="flex items-center gap-2"><i class="fas fa-database text-purple-600"></i> DB 3개 생성 가능</li>
+                                        <li class="flex items-center gap-2"><i class="fas fa-globe text-purple-600"></i> 도메인 3개 연결 가능</li>
+                                        <li class="flex items-center gap-2"><i class="fas fa-star text-purple-600"></i> 템플릿 기본 제공</li>
+                                        <li class="flex items-center gap-2"><i class="fas fa-rocket text-purple-600"></i> 고속 캐시 및 성능 최적화</li>
+                                        <li class="flex items-center gap-2"><i class="fas fa-shield-alt text-purple-600"></i> 강화된 보안 및 캐시</li>
+                                        <li class="flex items-center gap-2"><i class="fas fa-shield-halved text-purple-600"></i> DDoS 고급 보호</li>
+                                    @endif
+                                </ul>
+                            </div>
+                        </label>
+                    @endforeach
                 </div>
-            </label>
-        @endforeach
 
+                <div class="mt-6 text-center text-sm text-gray-500">
+                    <button type="button" onclick="document.getElementById('refundModal').showModal()" class="underline hover:text-blue-600">
+                        💡 환불 정책 보기
+                    </button>
+                </div>
 
-
-
-
-    </div>
-
-    <div class="mt-6 text-center text-sm text-gray-500">
-<button type="button" onclick="document.getElementById('refundModal').showModal()" class="underline hover:text-blue-600">
-        💡 환불 정책 보기
-    </button>
-</div>
-    <div class="mt-8 text-right">
-                    <button type="button" onclick="validateStep1()" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">다음</button>
-
-    </div>
-    
-</div>
-
+                <div class="mt-6 sm:mt-8 text-center sm:text-right">
+                    <button type="button" onclick="validateStep1()" class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">다음</button>
+                </div>
+            </div>
 
 
 
@@ -108,7 +96,7 @@
     <!-- 자바스크립트에서 내용 채워짐 -->
 </div>
 <div id="virtual-account-warning" class="text-sm text-orange-600 mt-3 hidden">
-    ※ 6개월 이상 결제 시 가상계좌 결제는 불가 합니다.
+    ※ 가상계좌/계좌이체 결제는 불가 합니다.
 </div>
 <div id="early-cancel-warning" class="text-sm text-red-500 mt-2 hidden leading-snug">
     <!-- 할인 시 표시 -->
@@ -135,6 +123,11 @@
                     <input type="password" id="whm_password" name="whm_password" class="w-full border rounded p-3" >
                     <p id="password-error" class="text-sm text-red-500 hidden mt-1"></p>
                 </div>
+                <div class="mb-4">
+    <label class="block font-medium mb-1">비밀번호 확인</label>
+    <input type="password" id="whm_password_confirm" class="w-full border rounded p-3" >
+    <p id="password-confirm-error" class="text-sm text-red-500 hidden mt-1">비밀번호가 일치하지 않습니다.</p>
+</div>
                 <div class="mt-6 flex justify-between">
                     <button type="button" onclick="goToStep(2)" class="px-6 py-2 bg-gray-400 text-white rounded hover:bg-gray-500">이전</button>
                     <button type="button" onclick="handleStep2Next()" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">다음</button>
@@ -273,296 +266,192 @@
 <script src="https://js.tosspayments.com/v1"></script>
 
 <script>
-    let finalPrice = 0;
-    let currentStep = 1;
-    const discounts = { 1: 0, 3: 0.02, 6: 0.04, 12: 0.1 };
-    const tossPayments = TossPayments("{{ config('services.toss.client_key') }}");
+let finalPrice = 0;
+let currentStep = 1;
+const discounts = { 1: 0, 3: 0.02, 6: 0.04, 12: 0.1 };
+const tossPayments = TossPayments("{{ config('services.toss.client_key') }}");
 
-    function goToStep(step) {
-        for (let i = 1; i <= 5; i++) {
-            document.getElementById('step-' + i)?.classList.add('hidden');
-        }
-        document.getElementById('step-' + step)?.classList.remove('hidden');
-        currentStep = step;
-
-        if (step === 4) updateSummary();
+function goToStep(step) {
+    for (let i = 1; i <= 5; i++) {
+        document.getElementById('step-' + i)?.classList.add('hidden');
     }
+    document.getElementById('step-' + step)?.classList.remove('hidden');
+    currentStep = step;
 
-    function updateSummary() {
-        const selectedPlan = document.querySelector('input[name="plan_id"]:checked');
-        const duration = document.querySelector('input[name="duration"]:checked')?.value;
-        const username = document.getElementById('username').value;
-
-        const price = parseInt(selectedPlan.dataset.price);
-        const discountRate = discounts[duration] || 0;
-        const total = Math.round(price * duration * (1 - discountRate));
-        const now = new Date();
-const durationMonths = parseInt(duration);
-const expiry = new Date(now);
-expiry.setMonth(now.getMonth() + durationMonths);
- finalPrice = total;
-
-
-// 날짜 YYYY-MM-DD 포맷
-function formatDate(date) {
-    return date.toISOString().slice(0, 10);
+    if (step === 2) updateDiscountSummary(); // ✅ 자동 할인 문구 출력
+    if (step === 4) updateSummary();
 }
 
-document.getElementById('summary-start').innerText = formatDate(now);
-document.getElementById('summary-end').innerText = formatDate(expiry);
-document.getElementById('summary-disk').innerText =
-    selectedPlan.dataset.disk + 'GB';
+function updateSummary() {
+    const selectedPlan = document.querySelector('input[name="plan_id"]:checked');
+    const duration = document.querySelector('input[name="duration"]:checked')?.value;
+    const username = document.getElementById('username').value;
 
+    const price = parseInt(selectedPlan.dataset.price);
+    const discountRate = discounts[duration] || 0;
+    const total = Math.round(price * duration * (1 - discountRate));
+    finalPrice = total;
 
-        document.getElementById('summary-plan-name').innerText = selectedPlan.dataset.name;
-        document.getElementById('summary-username').innerText = username;
-document.getElementById('summary-period').innerText = duration + ' 개월';
-        document.getElementById('summary-price').innerText = total.toLocaleString();
-        
+    const now = new Date();
+    const expiry = new Date(now);
+    expiry.setMonth(now.getMonth() + parseInt(duration));
 
-
-
-     
+    function formatDate(date) {
+        return date.toISOString().slice(0, 10);
     }
 
-    document.querySelectorAll('input[name="duration"]').forEach(el => {
-    el.addEventListener('change', () => {
-        const selected = document.querySelector('input[name="plan_id"]:checked');
-        if (!selected) return;
+    document.getElementById('summary-plan-name').innerText = selectedPlan.dataset.name;
+    document.getElementById('summary-username').innerText = username;
+    document.getElementById('summary-period').innerText = duration + ' 개월';
+    document.getElementById('summary-disk').innerText = selectedPlan.dataset.disk + 'GB';
+    document.getElementById('summary-start').innerText = formatDate(now);
+    document.getElementById('summary-end').innerText = formatDate(expiry);
+    document.getElementById('summary-price').innerText = total.toLocaleString();
+}
 
-        const price = parseInt(selected.dataset.price);
-        const months = parseInt(el.value);
-        const discountRate = discounts[months];
-        const discounted = Math.round(price * months * (1 - discountRate));
+function updateDiscountSummary() {
+    const selected = document.querySelector('input[name="plan_id"]:checked');
+    const durationInput = document.querySelector('input[name="duration"]:checked');
+    if (!selected || !durationInput) return;
 
-        document.getElementById('price-summary').innerText =
-            `할인 적용 총 금액: ${discounted.toLocaleString()}원 (${discountRate * 100}% 할인)`;
-        document.getElementById('price-summary').classList.remove('hidden');
+    const price = parseInt(selected.dataset.price);
+    const months = parseInt(durationInput.value);
+    const discountRate = discounts[months] || 0;
+    const discounted = Math.round(price * months * (1 - discountRate));
 
-        // 위약금 안내 표시
-        if (discountRate > 0) {
-            document.getElementById('early-cancel-warning').innerHTML =
-                '※ 중도 해지 시 할인 반환 위약금이 발생 됩니다..<br>' +
-                '<span class="text-xs text-gray-700">일반적으로 위약금은 <strong>(할인 금액 ÷ 총 개월수 × 잔여 개월수)</strong>로 계산됩니다.</span>';
-            document.getElementById('early-cancel-warning').classList.remove('hidden');
-        } else {
-            document.getElementById('early-cancel-warning').classList.add('hidden');
-            document.getElementById('early-cancel-warning').innerHTML = '';
-        }
+    const priceText = discountRate > 0
+        ? `할인 적용 총 금액: ${discounted.toLocaleString()}원 (${discountRate * 100}% 할인)`
+        : `정가로 결제됩니다: ${discounted.toLocaleString()}원`;
 
-        // ✅ 가상계좌 결제 불가 안내
-        const warningBox = document.getElementById('virtual-account-warning');
-        if (months >= 6) {
-            warningBox.classList.remove('hidden');
-        } else {
-            warningBox.classList.add('hidden');
-        }
+    document.getElementById('price-summary').innerText = priceText;
+    document.getElementById('price-summary').classList.remove('hidden');
+
+    const warningBox = document.getElementById('virtual-account-warning');
+    warningBox.classList.remove('hidden');
+
+    if (discountRate > 0) {
+        document.getElementById('early-cancel-warning').innerHTML =
+            '※ 중도 해지 시 할인 반환 위약금이 발생 됩니다..<br>' +
+            '<span class="text-xs text-gray-700">일반적으로 위약금은 <strong>(할인 금액 ÷ 총 개월수 × 잔여 개월수)</strong>로 계산됩니다.</span>';
+        document.getElementById('early-cancel-warning').classList.remove('hidden');
+    } else {
+        document.getElementById('early-cancel-warning').classList.add('hidden');
+        document.getElementById('early-cancel-warning').innerHTML = '';
+    }
+}
+
+function handlePayment() {
+    const selected = document.querySelector('input[name="plan_id"]:checked');
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('whm_password').value;
+    const duration = document.querySelector('input[name="duration"]:checked')?.value;
+    const orderId = 'order_' + Date.now();
+
+    if (!selected || !username || !password) {
+        alert("모든 항목을 입력해주세요.");
+        return;
+    }
+
+    const name = selected.dataset.name;
+
+    tossPayments.requestPayment('카드', {
+        amount: finalPrice,
+        orderId: orderId,
+        orderName: `${name} 플랜 (${duration}개월)`,
+        successUrl: '{{ url("/checkout/confirm") }}' +
+            '?plan_id=' + selected.value +
+            '&username=' + encodeURIComponent(username) +
+            '&password=' + encodeURIComponent(password) +
+            '&order_id=' + orderId +
+            '&period=' + duration,
+        failUrl: '{{ url("/checkout/fail") }}'
+    }).catch(error => {
+        console.error("❌ Toss 결제 실패:", error);
+        showPaymentError();
     });
-});
+}
 
-
-
-
-    document.addEventListener('DOMContentLoaded', function () {
-    const paymentButton = document.getElementById('paymentButton');
-    if (!paymentButton) return;
-
-    paymentButton.addEventListener('click', async function () {
-        const selected = document.querySelector('input[name="plan_id"]:checked');
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('whm_password').value;
-        const duration = document.querySelector('input[name="duration"]:checked')?.value;
-        const orderId = 'order_' + Date.now();
-
-        if (!selected || !username || !password) {
-            alert("모든 항목을 입력해주세요.");
-            return;
-        }
-
-        const price = parseInt(selected.dataset.price);
-        const name = selected.dataset.name;
-
-        try {
-            await tossPayments.requestPayment('카드', {
-                amount: finalPrice,
-                orderId: orderId,
-                orderName: `${name} 플랜 (${duration}개월)`,
-                successUrl: '{{ url("/checkout/confirm") }}' +
-                    '?plan_id=' + selected.value +
-                    '&username=' + encodeURIComponent(username) +
-                    '&password=' + encodeURIComponent(password) +
-                    '&order_id=' + orderId +
-                    '&period=' + duration,
-                failUrl: '{{ url("/checkout/fail") }}'
-            });
-        } catch (error) {
-            console.error("❌ Toss 결제 실패:", error);
-            showPaymentError();
-        }
-    });
-});
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const usernameInput = document.getElementById('username');
-        const usernameError = document.getElementById('username-error');
-        const passwordInput = document.getElementById('whm_password');
-        const passwordError = document.getElementById('password-error');
-        const paymentButton = document.getElementById('paymentButton');
-
-        let isUsernameValid = false;
-        let isPasswordValid = false;
-
-        usernameInput.addEventListener('blur', function () {
-
-            
-            const username = usernameInput.value.trim();
-
-    
-
-            if (username === '') {
-                clearUsernameError();
-                isUsernameValid = false;
-                updateSubmitButton();
-                return;
-            }
-
-            fetch('/check-whm-username', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ username: username })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.available) {
-                    usernameInput.classList.add('border-red-500');
-                    usernameError.textContent = '이미 사용 중인 아이디입니다.';
-                    usernameError.classList.remove('hidden');
-                    isUsernameValid = false;
-                } else {
-                    clearUsernameError();
-                    isUsernameValid = true;
-                }
-                updateSubmitButton();
-            })
-            .catch(error => {
-                console.error('WHM username check failed:', error);
-            });
-        });
-
-        passwordInput.addEventListener('input', function () {
-            const password = passwordInput.value;
-            const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-
-            if (!strongRegex.test(password)) {
-                passwordInput.classList.add('border-red-500');
-                passwordError.textContent = '대문자, 소문자, 숫자, 특수문자를 포함하여 8자 이상 입력하세요.';
-                passwordError.classList.remove('hidden');
-                isPasswordValid = false;
-            } else {
-                passwordInput.classList.remove('border-red-500');
-                passwordError.textContent = '';
-                passwordError.classList.add('hidden');
-                isPasswordValid = true;
-            }
-            updateSubmitButton();
-        });
-
-        function clearUsernameError() {
-            usernameInput.classList.remove('border-red-500');
-            usernameError.textContent = '';
-            usernameError.classList.add('hidden');
-        }
-
-        function updateSubmitButton() {
-            paymentButton.disabled = !(isUsernameValid && isPasswordValid);
-        }
-    });
-
-    goToStep(1);
-</script>
-
-
-<script>
-  function showPaymentError() {
-      const alertBox = document.getElementById('payment-error-alert');
-      if (alertBox) {
-          alertBox.classList.remove('hidden');
-      }
-  }
-
-  function hidePaymentError() {
-      const alertBox = document.getElementById('payment-error-alert');
-      if (alertBox) {
-          alertBox.classList.add('hidden');
-      }
-  }
-</script>
-
-<script>
 function validateStep1() {
     const selectedPlan = document.querySelector('input[name="plan_id"]:checked');
     if (!selectedPlan) {
         showPlanAlert();
         return;
     }
-
     goToStep(2);
 }
-
-function showPlanAlert() {
-    const modal = document.getElementById('plan-alert-modal');
-    if (modal) modal.classList.remove('hidden');
-}
-
-function hidePlanAlert() {
-    const modal = document.getElementById('plan-alert-modal');
-    if (modal) modal.classList.add('hidden');
-}
-
 
 function handleStep2Next() {
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('whm_password').value.trim();
+    const confirmPassword = document.getElementById('whm_password_confirm').value.trim();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
-    // 1. WHM 아이디: 비어있거나 이메일 형식이면 안 됨
+    clearValidationErrors();
+
     if (!username || emailRegex.test(username)) {
-        showUsernameModal(); // "아이디를 입력해주세요 또는 이메일 형식은 사용할 수 없습니다"
+        showError('username-error', '아이디를 입력해주세요 (이메일 형식은 사용할 수 없습니다)');
         return;
     }
 
-    // 2. 비밀번호: 비어있거나 조건 미충족 시 실패
     if (!password || !passwordRegex.test(password)) {
-        showPasswordModal(); // "비밀번호는 대문자, 소문자, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다"
+        showError('password-error', '비밀번호는 대문자, 소문자, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다');
+        document.getElementById('whm_password').classList.add('border-red-500');
         return;
     }
 
-    // 모두 통과 → 다음 단계
+    if (password !== confirmPassword) {
+        document.getElementById('whm_password_confirm').classList.add('border-red-500');
+        document.getElementById('password-confirm-error').classList.remove('hidden');
+        return;
+    }
+
     goToStep(4);
 }
 
-function showUsernameModal() {
-    const modal = document.getElementById('username-warning-modal');
-    if (modal) modal.classList.remove('hidden');
+function showError(id, message) {
+    const el = document.getElementById(id);
+    el.textContent = message;
+    el.classList.remove('hidden');
 }
 
-function hideUsernameModal() {
-    const modal = document.getElementById('username-warning-modal');
-    if (modal) modal.classList.add('hidden');
+function clearValidationErrors() {
+    ['username-error', 'password-error', 'password-confirm-error'].forEach(id => {
+        document.getElementById(id)?.classList.add('hidden');
+    });
+    document.getElementById('whm_password')?.classList.remove('border-red-500');
+    document.getElementById('whm_password_confirm')?.classList.remove('border-red-500');
 }
 
-function showPasswordModal() {
-    document.getElementById('password-warning-modal')?.classList.remove('hidden');
+function showPlanAlert() {
+    document.getElementById('plan-alert-modal')?.classList.remove('hidden');
 }
 
-function hidePasswordModal() {
-    document.getElementById('password-warning-modal')?.classList.add('hidden');
+function hidePlanAlert() {
+    document.getElementById('plan-alert-modal')?.classList.add('hidden');
 }
+
+function showPaymentError() {
+    document.getElementById('payment-error-alert')?.classList.remove('hidden');
+}
+
+function hidePaymentError() {
+    document.getElementById('payment-error-alert')?.classList.add('hidden');
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    goToStep(1);
+
+    // 결제 버튼 이벤트
+    document.getElementById('paymentButton')?.addEventListener('click', handlePayment);
+
+    // duration 변경 시 할인 계산
+    document.querySelectorAll('input[name="duration"]').forEach(el => {
+        el.addEventListener('change', updateDiscountSummary);
+    });
+});
 </script>
+
 
 
 <div id="payment-error-alert" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">

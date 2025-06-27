@@ -2,6 +2,8 @@
 <!DOCTYPE html>
 <html lang="ko" class="dark">
 <head>
+  <meta name="naver-site-verification" content="28b6a23100e916ab0caa77d70504b95b3e48cf5e" />
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
   <meta charset="UTF-8" />
@@ -25,39 +27,47 @@
 <body class="bg-zinc-900 text-white">
 
 <!-- Header -->
+<!-- Header -->
 <header class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
-    <div class="flex items-center">
-      <!-- Logo Placeholder -->
-   
-      <div class="text-lg font-bold">
-         <img src="images/logo.png" class="w-52 h-auto mx-auto" >
-      </div>
+  <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center px-4 py-3 md:px-6 md:py-4 gap-y-3">
+
+    <!-- 로고 -->
+    <div class="flex-shrink-0 w-full md:w-auto flex items-center justify-center md:justify-start">
+      <img src="images/logo.png" alt="Hostyle Logo" class="w-40 h-auto mx-auto md:mx-0" />
     </div>
-    <nav class="space-x-6 text-sm flex items-center">
-       <a href="https://snsworks.co.kr" target="_blank" class="text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
-          S&SWorks 홈페이지
-        </a>
-      <a href="#why" class="hover:text-blue-400">특장점</a>
-      <a href="#infra" class="hover:text-blue-400">인프라</a>
-      <a href="#images" class="hover:text-blue-400">기능</a>
-      <a href="#plans" class="hover:text-blue-400">요금제</a>
-      <a href="https://s-organization-887.gitbook.io/hostyle-web/" target="_blank" class="text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
-          📘 가이드북
-        </a>
-      <!-- Login / Dashboard -->
+
+    <!-- 네비게이션 -->
+    <nav class="flex flex-wrap justify-center md:justify-end items-center gap-x-4 gap-y-2 w-full md:w-auto text-sm">
+
+      <a href="https://snsworks.co.kr" target="_blank"
+         class="text-gray-400 hover:text-blue-400 transition px-2 py-1 md:px-3 md:py-2 rounded-md font-medium">
+        S&SWorks 홈페이지
+      </a>
+      <a href="#why" class="text-gray-200 hover:text-blue-400 transition px-2 py-1">특장점</a>
+      <a href="#infra" class="text-gray-200 hover:text-blue-400 transition px-2 py-1">인프라</a>
+      <a href="#images" class="text-gray-200 hover:text-blue-400 transition px-2 py-1">기능</a>
+      <a href="#plans" class="text-gray-200 hover:text-blue-400 transition px-2 py-1">요금제</a>
+
+      <a href="https://s-organization-887.gitbook.io/hostyle-web/" target="_blank"
+         class="text-gray-400 hover:text-blue-400 transition px-2 py-1 md:px-3 md:py-2 rounded-md font-medium">
+        📘 가이드북
+      </a>
+
       @auth
-        <a href="{{ route('dashboard') }}" class="ml-6 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">
+        <a href="{{ route('dashboard') }}"
+           class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium">
           Dashboard 바로가기
         </a>
       @else
-        <a href="{{ route('login') }}" class="ml-6 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">
+        <a href="{{ route('login') }}"
+           class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium">
           로그인
         </a>
-      @endauth    </nav>
+      @endauth
+
+    </nav>
   </div>
 </header>
-
 
 
 <!-- Hero -->
@@ -90,12 +100,16 @@
 
 
 
-<!-- Key Features with Slider -->
-<section id="why" class="bg-zinc-950 py-20 px-6">
-  <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-10 items-center">
-    <div>
-      <h2 class="text-5xl font-bold mb-4">왜 Hostyle인가?</h2>
-      <ul class="space-y-4 text-sm text-zinc-300">
+<!-- ✅ 더 넓은 슬라이더: 브라우저 전체 폭 사용 -->
+<section id="why" class="bg-zinc-950 py-16 px-4">
+  <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+
+    <!-- 좌측 텍스트: 5/12 -->
+     
+    <div class="md:col-span-4 space-y-5">
+      <h2 class="text-3xl md:text-5xl font-bold text-white">왜 Hostyle인가?</h2>
+      <ul class="space-y-3 text-sm text-zinc-300 leading-relaxed">
+        <li>✅ 병원/식당/학원/커뮤니티/통신사 등등 홍보페이지 최적화</li>
         <li>✅ 클릭 한 번으로 WordPress 설치 완료</li>
         <li>✅ WordPress 템플릿 무료 제공</li>
         <li>✅ 사용자 맞춤형 가이드북 제공</li>
@@ -104,14 +118,27 @@
         <li>✅ 결제 후 3분 이내 자동 구축 및 접속 가능</li>
       </ul>
     </div>
-    <!-- Image Slider -->
-    <div class="slider relative w-[800px] h-[500px] bg-zinc-800 rounded-lg overflow-hidden">
-      <img src="images/img1.PNG" class="absolute inset-0 w-full h-full object-fill opacity-100">
-      <img src="images/img2.png" class="absolute inset-0 w-full h-full object-fill opacity-0">
-      <img src="images/img4.PNG" class="absolute inset-0 w-full h-full object-fill opacity-0">
+
+    <!-- 우측 슬라이드: 7/12 -->
+     <!-- 슬라이더 영역: 이미지 권장 사이즈 1200x750 이상 -->
+
+    <div class="md:col-span-8">
+      <div class="slider relative w-full h-[260px] sm:h-[360px] md:h-[480px] lg:h-[560px] bg-zinc-800 rounded-xl overflow-hidden shadow-lg">
+        <!-- 추천 이미지 사이즈: 1500x900px 이상 -->
+        <img src="images/img1.PNG" alt="슬라이드1"
+             class="absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-700">
+        <img src="images/img2.png" alt="슬라이드2"
+             class="absolute inset-0 w-full h-full object-cover opacity-0">
+        <img src="images/img4.PNG" alt="슬라이드3"
+             class="absolute inset-0 w-full h-full object-cover opacity-0">
+      </div>
     </div>
+
   </div>
 </section>
+
+
+
 
 <script>
 // Simple slider logic
@@ -155,7 +182,7 @@ setInterval(() => {
   <div class="max-w-6xl mx-auto space-y-16">
     <!-- Dashboard -->
     <div class="grid md:grid-cols-2 gap-8 items-center">
-      <img src="images/dashboard_img.PNG" alt="대시보드 이미지" class="rounded-lg shadow-xl h-[300px]" >
+      <img src="images/img5.PNG" alt="대시보드 이미지" class="rounded-lg shadow-xl h-[300px]" >
       <div>
         <h3 class="text-xl font-semibold mb-2">사용자 대시보드</h3>
         <p class="text-zinc-300 text-sm">서비스 상태, 도메인, 남은 기간 등 모든 정보를 한눈에 확인하는 직관적 대시보드.</p>
@@ -236,7 +263,7 @@ setInterval(() => {
       <li class="flex items-center gap-2"><i class="fab fa-wordpress text-purple-600"></i> WordPress 자동설치</li>
       <li class="flex items-center gap-2"><i class="fas fa-database text-purple-600"></i> DB 3개 생성 가능</li>
       <li class="flex items-center gap-2"><i class="fas fa-globe text-purple-600"></i> 도메인 3개 연결 가능</li>
-      <li class="flex items-center gap-2"><i class="fas fa-star text-purple-600"></i> 프리미엄 템플릿 전체 제공</li>
+      <li class="flex items-center gap-2"><i class="fas fa-star text-purple-600"></i> 템플릿 기본 제공</li>
       <li class="flex items-center gap-2"><i class="fas fa-shield-alt text-purple-600"></i> 강화된 보안 및 캐시</li>
       <li class="flex items-center gap-2"><i class="fas fa-shield-halved text-purple-600"></i> DDoS 고급 보호</li>
 

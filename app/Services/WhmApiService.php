@@ -120,10 +120,10 @@ public function createPackage($packageName, $diskSize, $plan)
         'maxsql' => $plan->sql_databases,
         'maxpop' => $plan->email_accounts,
         'maxlst' => $plan->mailing_lists,
-        'bwlimit' => 'unlimited',  // ✅ 핵심 수정 포인트
+        'bwlimit' => $plan->bandwidth > 0 ? $plan->bandwidth * 1024 : 'unlimited',
         'maxpark' => 0,
-        'maxaddon' => 0,
-        'maxsub' => 0,
+'maxaddon' => $plan->addon_domains,
+'maxsub'   => $plan->subdomains,
         'max_email_per_hour' => $plan->max_email_per_hour,
         'max_emailacct_quota' => $plan->email_quota,
         'cgi' => 1,
