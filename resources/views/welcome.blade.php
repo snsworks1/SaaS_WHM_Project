@@ -306,7 +306,7 @@ setInterval(() => {
         </svg>
       </button>
       <div class="faq-content px-6 pb-4 text-sm text-zinc-300 hidden">
-        템플릿은 WordPress에 자동 설치되는 형태로 제공되며, 로그인 후 테마 설정에서 활성화할 수 있습니다. Pro 플랜은 프리미엄 템플릿 전체 제공됩니다.
+        템플릿은 WordPress에 자동 설치되는 형태로 제공되며, 로그인 후 테마 설정에서 활성화할 수 있습니다.
       </div>
     </div>
 
@@ -318,7 +318,7 @@ setInterval(() => {
         </svg>
       </button>
       <div class="faq-content px-6 pb-4 text-sm text-zinc-300 hidden">
-        네. 기본 제공되는 임시 도메인(예: yourname.hostyle.me)으로 먼저 시작할 수 있으며, 이후 도메인을 연결할 수 있습니다.
+        네. 기본 제공되는 공유 도메인으로 먼저 시작할 수 있으며, 이후 도메인을 연결할 수 있습니다.
       </div>
     </div>
 
@@ -341,7 +341,7 @@ setInterval(() => {
         </svg>
       </button>
       <div class="faq-content px-6 pb-4 text-sm text-zinc-300 hidden">
-        모든 플랜은 트래픽 무제한을 기본으로 제공하며, SSD 저장 용량은 각 플랜 기준에 따라 적용됩니다. 디스크 사용량은 대시보드에서 실시간 확인 가능합니다.
+        BASIC 플랜은 트래픽 월 30GB / PRO 플랜은 무제한을 으로 제공하며, SSD 저장 용량은 각 플랜 기준에 따라 적용됩니다. 디스크 사용량은 대시보드에서 실시간 확인 가능합니다.
       </div>
     </div>
         <div class="bg-zinc-800 rounded-lg shadow overflow-hidden">
@@ -366,8 +366,12 @@ setInterval(() => {
 <footer class="bg-zinc-950 py-10 text-center text-sm text-zinc-400">
   ⓒ 2018 S&S Works. All rights reserved.
       · <button onclick="document.getElementById('refundModal').showModal()" class="underline text-blue-400 hover:text-blue-600">환불 정책</button>
-          · <a href="/terms" class="underline hover:text-white">이용약관</a> ·
-    <a href="/policy" class="underline hover:text-white">개인정보 처리방침</a> 
+· <button onclick="document.getElementById('termsModal').showModal()" class="underline text-blue-400 hover:text-blue-600">
+    서비스 이용약관
+</button>    · <button onclick="document.getElementById('privacyModal').showModal()" class="underline text-blue-400 hover:text-blue-600">
+    개인정보 처리방침
+</button>
+
     <div class="max-w-6xl mx-auto px-4 text-center space-y-2">
         <p>
             <span class="inline-block">상호명: 에스앤에스웍스</span> |
@@ -380,14 +384,15 @@ setInterval(() => {
         </p>
         <p>
             <span class="inline-block">사업장 주소: 서울특별시 강남구 강남대로 112길 47, 2층 369A호</span> |
-            <span class="inline-block">고객센터: 010-5914-3150</span>
+            <span class="inline-block">홈페이지: https://www.snsworks.co.kr</span> |
+            <span class="inline-block">고객센터 운영시간: 영업일 10:00 ~ 18:00</span>
         </p>
     </div>
 
 </footer>
 
-<dialog id="refundModal" class="rounded-xl max-w-xl w-full shadow-lg backdrop:bg-black/50">
-    <div class="p-6">
+<dialog id="refundModal"class="rounded-xl max-w-[90vw] sm:max-w-xl w-full shadow-lg backdrop:bg-black/50 z-50">
+  <div class="p-6 bg-white rounded-xl max-h-[80vh] overflow-y-auto">
         <h2 class="text-lg font-bold mb-4">환불 정책 안내</h2>
         <p class="text-sm text-gray-700 leading-relaxed space-y-2">
             결제일 기준 <strong>14일 이내</strong>에는 사용일수만큼 일할 계산되어 <strong>남은 기간에 대해 환불</strong>이 가능합니다.<br><br>
@@ -411,6 +416,153 @@ setInterval(() => {
     
 </dialog>
 
+
+
+    <dialog id="privacyModal" class="rounded-xl max-w-[90vw] sm:max-w-xl w-full shadow-lg backdrop:bg-black/50 z-50 open:overflow-hidden">
+  <div class="bg-white rounded-xl w-full max-h-[80vh] overflow-y-auto p-6">
+    <h2 class="text-lg font-bold mb-4 text-gray-800">개인정보 처리방침</h2>
+
+    <div class="text-sm text-gray-700 leading-relaxed space-y-4">
+
+      <p>에스앤에스웍스(이하 "회사")은 개인정보 보호법에 따라 이용자의 개인정보를 보호하고 권익을 보호하기 위해 다음과 같은 개인정보 처리방침을 수립·공개합니다.</p>
+
+      <p><strong>1. 수집하는 개인정보 항목</strong><br>
+        - 필수항목: 이메일, 비밀번호, 이름, 전화번호, 서비스 이용기록, 결제정보(가상계좌/카드 정보) 사업장주소, 프로필 정보, 회사명 , 사업자등록번호<br>
+        
+      </p>
+
+      <p><strong>2. 개인정보 수집 방법</strong><br>
+        - 회원가입 시 사용자가 직접 입력<br>
+        - 서비스 이용 중 자동 수집(Cookie, 접속 IP 등)
+      </p>
+
+      <p><strong>3. 개인정보 이용 목적</strong><br>
+        - 회원가입 및 본인 확인<br>
+        - 서비스 제공 및 계약 이행<br>
+        - 고객 상담, 민원 처리<br>
+        - 요금 정산 및 결제<br>
+        - 서비스 개선 및 마케팅 활용(동의 시)
+      </p>
+
+      <p><strong>4. 개인정보 보유 및 이용기간</strong><br>
+        - 회원 탈퇴 시 즉시 삭제<br>
+        - 관계법령에 따라 일정기간 보존되는 경우:<br>
+          · 계약 또는 청약철회 기록: 5년<br>
+          · 대금결제 및 재화 공급 기록: 5년<br>
+          · 소비자 불만 또는 분쟁처리 기록: 3년
+      </p>
+
+      <p><strong>5. 개인정보 제3자 제공</strong><br>
+        회사는 원칙적으로 이용자의 개인정보를 외부에 제공하지 않습니다. 단, 다음의 경우에는 예외로 합니다:<br>
+        - 이용자의 사전 동의를 받은 경우<br>
+        - 법령에 의거하거나 수사기관의 요청이 있는 경우
+      </p>
+
+      <p><strong>6. 개인정보 처리 위탁</strong><br>
+        회사는 서비스 제공을 위해 아래와 같이 개인정보 처리를 위탁할 수 있습니다:<br>
+        - 결제처리: 토스페이먼츠㈜<br>
+        - 이메일 발송: Amazon SES (또는 Mailgun 등)
+      </p>
+
+      <p><strong>7. 정보주체의 권리와 행사 방법</strong><br>
+        - 개인정보 열람, 정정, 삭제, 처리정지 요청 가능<br>
+        - 회원정보 수정 또는 탈퇴를 통해 직접 처리 가능<br>
+        - 또는 개인정보 보호책임자에게 요청 가능
+      </p>
+
+      <p><strong>8. 개인정보 보호책임자</strong><br>
+        · 이름: 김대현<br>
+        · 이메일: support@snsworks.co.kr<br>
+        · 연락처: 010-5914-3150
+      </p>
+
+      <p><strong>9. 쿠키의 설치/운영 및 거부</strong><br>
+        - 웹사이트는 맞춤형 서비스 제공을 위해 쿠키(cookie)를 사용합니다.<br>
+        - 사용자는 브라우저 설정을 통해 쿠키 저장을 거부하거나 삭제할 수 있습니다.
+      </p>
+
+      <p class="text-xs text-gray-500">
+        본 방침은 2025년 6월 27일부터 시행됩니다.
+      </p>
+    </div>
+
+    <div class="mt-6 text-end">
+      <button onclick="document.getElementById('privacyModal').close()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        닫기
+      </button>
+    </div>
+  </div>
+</dialog>
+
+
+<dialog id="termsModal" class="rounded-xl max-w-[90vw] sm:max-w-xl w-full shadow-lg backdrop:bg-black/50 z-50 open:overflow-hidden">
+  <div class="bg-white rounded-xl w-full max-h-[80vh] overflow-y-auto p-6">
+    <h2 class="text-lg font-bold mb-4 text-gray-800">서비스 이용약관</h2>
+
+    <div class="text-sm text-gray-700 leading-relaxed space-y-4">
+      <p>
+        본 약관은 귀하가 당사의 웹호스팅 SaaS 서비스를 이용함에 있어 필요한 조건, 권리 및 의무를 규정합니다.
+      </p>
+
+      <p>
+        <strong>제1조 (목적)</strong><br>
+        본 약관은 사용자가 본 서비스에 가입하고, cPanel를 기반으로 한 웹사이트를 생성하고 운영하는 과정에서 발생할 수 있는 기본적인 이용 조건을 규정합니다.
+      </p>
+
+      <p>
+        <strong>제2조 (서비스 내용)</strong><br>
+        당사는 사용자의 신청에 따라 cPanel 기반 웹사이트를 자동으로 생성하며, WHM 기반 리셀러 서버를 통해 웹호스팅 환경을 제공합니다. 서비스 구성은 선택한 요금제에 따라 상이할 수 있습니다.
+      </p>
+
+      <p>
+        <strong>제3조 (회원가입 및 계정)</strong><br>
+        사용자는 유효한 이메일, 비밀번호, 연락처 등의 정보를 제공하고, 정해진 절차를 통해 회원가입을 완료해야 합니다. 회원 정보는 사용자 본인의 책임 하에 관리되어야 하며, 타인에게 공유 또는 양도할 수 없습니다.
+      </p>
+
+      <p>
+        <strong>제4조 (서비스 이용 요금)</strong><br>
+        서비스는 유료이며, 요금제에 따라 월 단위 또는 정기 결제 방식으로 운영됩니다. 결제 금액 및 조건은 서비스 페이지에 명시된 내용을 따릅니다.
+      </p>
+
+      <p>
+        <strong>제5조 (계정 정지 및 해지)</strong><br>
+        다음과 같은 경우 당사는 사전 통보 없이 계정 정지 또는 해지를 할 수 있습니다:<br>
+        - 이용약관을 위반하거나 불법적인 콘텐츠를 운영한 경우<br>
+        - cPanel 외 목적의 무단 사용, 리소스 과다 사용 등<br>
+        - 저작권 침해 목적 사용<br>
+        - 기타 서비스 안정성에 심각한 영향을 줄 경우
+      </p>
+
+      <p>
+        <strong>제6조 (데이터 보관 및 삭제)</strong><br>
+        서비스 해지 후 7일간 데이터가 보관되며, 이후 자동 삭제됩니다. 해지 전 백업은 사용자 책임입니다.
+      </p>
+
+      <p>
+        <strong>제7조 (면책 조항)</strong><br>
+        당사는 아래 사유로 인한 피해에 대해 책임지지 않습니다:<br>
+        - 사용자의 과실로 인한 정보 유출 또는 손해<br>
+        - IDC/서버 장애, 천재지변, 통신망 문제 등 외부 요인<br>
+        - 사용자의 콘텐츠 관리 부주의
+      </p>
+
+      <p>
+        <strong>제8조 (약관 변경)</strong><br>
+        당사는 서비스 개선을 위해 약관을 변경할 수 있으며, 변경 시 웹사이트에 사전 공지합니다.
+      </p>
+
+      <p class="text-xs text-gray-500">
+        본 약관은 2025년 6월 기준으로 작성되었으며, 최신 버전은 서비스 페이지를 통해 확인할 수 있습니다.
+      </p>
+    </div>
+
+    <div class="mt-6 text-end">
+      <button onclick="document.getElementById('termsModal').close()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        닫기
+      </button>
+    </div>
+  </div>
+</dialog>
 
 
 
