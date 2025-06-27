@@ -52,7 +52,7 @@
   <div class="bg-white dark:bg-gray-800 rounded-xl shadow border p-4 sm:p-6">
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">🛠 패치노트</h3>
-      <a href="https://s-organization-887.gitbook.io/hostyle-web/undefined-3/undefined"
+      <a href="https://s-organization-887.gitbook.io/hostyle-web/undefined-3/2025"
          class="text-xs sm:text-sm text-blue-600 hover:underline font-semibold">+ 자세히 보기</a>
     </div>
     <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed">

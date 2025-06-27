@@ -14,7 +14,7 @@
             <p class="text-2xl font-bold text-red-500">{{ $expiringSoonCount }}개</p>
         </div>
         <div class="bg-white border shadow-sm p-6 rounded-xl">
-            <h4 class="text-gray-500 text-sm mb-1">청 월 이용 금액</h4>
+            <h4 class="text-gray-500 text-sm mb-1">월 이용 금액</h4>
             <p class="text-2xl font-bold text-green-600">{{ number_format($monthlyTotal) }}원</p>
         </div>
     </div>
