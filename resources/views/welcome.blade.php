@@ -35,6 +35,9 @@
       </div>
     </div>
     <nav class="space-x-6 text-sm flex items-center">
+       <a href="https://snsworks.co.kr" target="_blank" class="text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
+          S&SWorks 홈페이지
+        </a>
       <a href="#why" class="hover:text-blue-400">특장점</a>
       <a href="#infra" class="hover:text-blue-400">인프라</a>
       <a href="#images" class="hover:text-blue-400">기능</a>
@@ -58,11 +61,34 @@
 
 
 <!-- Hero -->
-<section class="px-6 py-20 max-w-7xl mx-auto text-center">
-  <h1 class="text-5xl font-extrabold mb-6 ">SaaS 자동화 웹 솔루션 - Hostyle<br><br>강력하고 간편한 웹호스팅<br></h1>
-  <p class="text-zinc-300 mb-6">회원가입 → 플랜 선택 → 결제 → 자동 구축<br>복잡한 설치 없이 3분 만에 내 웹사이트 오픈</p>
-  <a href="{{ route('login') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">지금 시작하기</a>
+<section class="px-6 py-24 max-w-7xl mx-auto">
+  <div class="grid md:grid-cols-2 items-center gap-10">
+    
+    <!-- 텍스트 영역 -->
+    <div class="text-center md:text-left space-y-6">
+      <h1 class="text-4xl md:text-5xl font-extrabold leading-snug">
+        <span class="text-blue-500">Hostyle</span>
+        <br class="hidden md:block">
+        <span class="mt-3 block">강력하고 간편한 웹호스팅</span>
+      </h1>
+      <p class="text-zinc-300 text-lg leading-relaxed">
+        회원가입 → 플랜 선택 → 결제 → 자동 구축<br>
+        복잡한 설치 없이 <strong>3분 만에 내 웹사이트 오픈</strong>
+      </p>
+      <a href="{{ route('login') }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg text-base transition-all">
+        지금 시작하기
+      </a>
+    </div>
+
+    <!-- 이미지 영역 -->
+    <div class="flex justify-center md:justify-end">
+      <img src="{{ asset('images/auto-deply1.jpg') }}" alt="자동 구축 예시" class="w-[600px] max-w-full rounded-xl shadow-2xl">
+    </div>
+
+  </div>
 </section>
+
+
 
 <!-- Key Features with Slider -->
 <section id="why" class="bg-zinc-950 py-20 px-6">
@@ -71,9 +97,9 @@
       <h2 class="text-5xl font-bold mb-4">왜 Hostyle인가?</h2>
       <ul class="space-y-4 text-sm text-zinc-300">
         <li>✅ 클릭 한 번으로 WordPress 설치 완료</li>
-        <li>✅ 프리미엄 유료 템플릿 무료 제공</li>
+        <li>✅ WordPress 템플릿 무료 제공</li>
         <li>✅ 사용자 맞춤형 가이드북 제공</li>
-        <li>✅ 무제한 트래픽 / 월 요금제</li>
+        <li>✅ 유연한 플랜별 월 요금제</li>
         <li>✅ 초보자도 쉽게 사용하는 cPanel 인터페이스</li>
         <li>✅ 결제 후 3분 이내 자동 구축 및 접속 가능</li>
       </ul>
@@ -82,7 +108,7 @@
     <div class="slider relative w-[800px] h-[500px] bg-zinc-800 rounded-lg overflow-hidden">
       <img src="images/img1.PNG" class="absolute inset-0 w-full h-full object-fill opacity-100">
       <img src="images/img2.png" class="absolute inset-0 w-full h-full object-fill opacity-0">
-      <img src="images/img3.PNG" class="absolute inset-0 w-full h-full object-fill opacity-0">
+      <img src="images/img4.PNG" class="absolute inset-0 w-full h-full object-fill opacity-0">
     </div>
   </div>
 </section>
@@ -116,6 +142,7 @@ setInterval(() => {
         <li>보안 정책 + 예약 백업 자동화</li>
         <li>Cloudflare 연동: DDoS 방어 및 속도 최적화</li>
         <li>글로벌 DNS 연결: 빠른 응답성 보장</li>
+        <li>해외 웹서버 / 도메인 익명성</li>
       </ul>
     </div>
 
@@ -182,39 +209,42 @@ setInterval(() => {
   <div class="max-w-7xl mx-auto text-center">
     <h2 class="text-3xl font-bold mb-10">요금제 플랜</h2>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto ">
-      <!-- Basic 플랜 -->
-      <div class="bg-white text-black p-6 rounded-xl shadow-md border border-gray-200 hover:shadow-xl hover:scale-[1.01] transition-all duration-300">
-        <h3 class="text-xl font-bold mb-2">basic 플랜</h3>
-        <p class="text-blue-600 font-semibold mb-4">₩39,000 / 월</p>
-        <ul class="space-y-3 text-sm">
-          <li class="flex items-center gap-2"><i class="fas fa-hdd text-blue-600"></i> 5GB SSD 저장공간</li>
-          <li class="flex items-center gap-2"><i class="fas fa-infinity text-blue-600"></i> 무제한 트래픽</li>
-          <li class="flex items-center gap-2"><i class="fab fa-wordpress text-blue-600"></i> WordPress 자동설치</li>
-          <li class="flex items-center gap-2"><i class="fas fa-palette text-blue-600"></i> 템플릿 기본 제공</li>
-          <li class="flex items-center gap-2"><i class="fas fa-shield-alt text-blue-600"></i> 보안 및 캐시 최적화 포함</li>
-          <li class="flex items-center gap-2"><i class="fas fa-shield-halved text-blue-600"></i> DDoS 고급 보호</li>
-        </ul>
-      </div>
+ <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+  <!-- Basic 플랜 -->
+  <div class="bg-white text-black p-6 rounded-xl shadow-md border border-gray-200 hover:shadow-xl hover:scale-[1.01] transition-all duration-300">
+    <h3 class="text-xl font-bold mb-2">Basic 플랜</h3>
+    <p class="text-blue-600 font-semibold mb-4">₩29,000 / 월</p>
+    <ul class="space-y-3 text-sm">
+      <li class="flex items-center gap-2"><i class="fas fa-hdd text-blue-600"></i> 5GB SSD 저장공간</li>
+      <li class="flex items-center gap-2"><i class="fas fa-tachograph-digital text-blue-600"></i> 월 30GB 트래픽</li>
+      <li class="flex items-center gap-2"><i class="fab fa-wordpress text-blue-600"></i> WordPress 자동설치</li>
+      <li class="flex items-center gap-2"><i class="fas fa-database text-blue-600"></i> DB 1개 생성 가능</li>
+      <li class="flex items-center gap-2"><i class="fas fa-globe text-blue-600"></i> 도메인 1개 연결 가능</li>
+      <li class="flex items-center gap-2"><i class="fas fa-palette text-blue-600"></i> 템플릿 기본 제공</li>
+      <li class="flex items-center gap-2"><i class="fas fa-shield-alt text-blue-600"></i> 보안 및 캐시 최적화</li>
+      <li class="flex items-center gap-2"><i class="fas fa-shield-halved text-blue-600"></i> DDoS 고급 보호</li>
+    </ul>
+  </div>
 
-      <!-- Pro 플랜 -->
-      <div class="bg-white text-black p-6 rounded-xl shadow-md border border-gray-200 hover:shadow-xl hover:scale-[1.01] transition-all duration-300">
-        <h3 class="text-xl font-bold mb-2">pro 플랜</h3>
-        <p class="text-purple-600 font-semibold mb-4">₩59,000 / 월</p>
-        <ul class="space-y-3 text-sm">
-          <li class="flex items-center gap-2"><i class="fas fa-hdd text-purple-600"></i> 10GB SSD 저장공간</li>
-          <li class="flex items-center gap-2"><i class="fas fa-infinity text-purple-600"></i> 무제한 트래픽</li>
-          <li class="flex items-center gap-2"><i class="fas fa-star text-purple-600"></i> 프리미엄 템플릿 전체 제공</li>
-          <li class="flex items-center gap-2"><i class="fas fa-shield-alt text-purple-600"></i> 강화된 보안 및 캐시</li>
-          <li class="flex items-center gap-2"><i class="fas fa-shield-halved text-purple-600"></i> DDoS 고급 보호</li>
-          <li class="flex items-center gap-2"><i class="fas fa-rocket text-purple-600"></i> 고속 캐시 및 성능 최적화</li>
-          <li class="flex items-center gap-2"><i class="fas fa-cloud-upload-alt text-purple-600"></i> 주 1회 자동 백업</li>
-          <li class="flex items-center gap-2"><i class="fas fa-wrench text-purple-600"></i> SFTP 지원</li>
-          <li class="flex items-center gap-2"><i class="fas fa-robot text-purple-600"></i> AI 이상 트래픽 탐지</li>
-        </ul>
-      </div>
-      
-    </div>
+  <!-- Pro 플랜 -->
+  <div class="bg-white text-black p-6 rounded-xl shadow-md border border-gray-200 hover:shadow-xl hover:scale-[1.01] transition-all duration-300">
+    <h3 class="text-xl font-bold mb-2">Pro 플랜</h3>
+    <p class="text-purple-600 font-semibold mb-4">₩59,000 / 월</p>
+    <ul class="space-y-3 text-sm">
+      <li class="flex items-center gap-2"><i class="fas fa-hdd text-purple-600"></i> 20GB SSD 저장공간</li>
+      <li class="flex items-center gap-2"><i class="fas fa-infinity text-purple-600"></i> 무제한 트래픽</li>
+      <li class="flex items-center gap-2"><i class="fab fa-wordpress text-purple-600"></i> WordPress 자동설치</li>
+      <li class="flex items-center gap-2"><i class="fas fa-database text-purple-600"></i> DB 3개 생성 가능</li>
+      <li class="flex items-center gap-2"><i class="fas fa-globe text-purple-600"></i> 도메인 3개 연결 가능</li>
+      <li class="flex items-center gap-2"><i class="fas fa-star text-purple-600"></i> 프리미엄 템플릿 전체 제공</li>
+      <li class="flex items-center gap-2"><i class="fas fa-shield-alt text-purple-600"></i> 강화된 보안 및 캐시</li>
+      <li class="flex items-center gap-2"><i class="fas fa-shield-halved text-purple-600"></i> DDoS 고급 보호</li>
+
+    </ul>
+  </div>
+</div>
+
+
     <div class="mt-6">
   <a href="/login" class="inline-block px-2 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">플랜 선택하기</a>
 </div>

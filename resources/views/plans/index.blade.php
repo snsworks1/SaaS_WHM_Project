@@ -37,33 +37,32 @@
                         </div>
                     </div>
 
-                    <ul class="mt-4 space-y-3 text-sm text-gray-700">
-                        @if ($plan->name === 'basic')
-                            <li class="flex items-center gap-2"><i class="fas fa-hdd text-blue-600"></i> 5GB SSD 저장공간</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-infinity text-blue-600"></i> 무제한 트래픽</li>
-                            <li class="flex items-center gap-2"><i class="fab fa-wordpress text-blue-600"></i> WordPress 자동설치</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-palette text-blue-600"></i> 템플릿 기본 제공</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-shield-alt text-blue-600"></i> 보안 및 캐시 최적화 포함</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-shield-halved text-blue-600"></i> DDoS 고급 보호</li>
-                            <li class="flex items-center gap-2"></li>
-                            <li class="flex items-center gap-2"></li>
-                            <li class="flex items-center gap-2"></li>
-                            <li class="flex items-center gap-2"></li>
-                            <li class="flex items-center gap-2"></li><li class="flex items-center gap-2"></li>
-                            <li class="flex items-center gap-2"></li><li class="flex items-center gap-2"></li>
-                        @elseif ($plan->name === 'pro')
-                            <li class="flex items-center gap-2"><i class="fas fa-hdd text-purple-600"></i> 10GB SSD 저장공간</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-infinity text-purple-600"></i> 무제한 트래픽</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-star text-purple-600"></i> 프리미엄 템플릿 전체 제공</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-shield-alt text-purple-600"></i> 강화된 보안 및 캐시</li>
+ <ul class="mt-4 space-y-3 text-sm text-gray-700">
+    @if ($plan->name === 'basic')
+        <li class="flex items-center gap-2"><i class="fas fa-hdd text-blue-600"></i> 5GB SSD 저장공간</li>
+        <li class="flex items-center gap-2"><i class="fas fa-tachometer-alt text-blue-600"></i> 월 30GB 트래픽</li>
+        <li class="flex items-center gap-2"><i class="fab fa-wordpress text-blue-600"></i> WordPress 자동설치</li>
+        <li class="flex items-center gap-2"><i class="fas fa-database text-blue-600"></i> DB 1개 생성 가능</li>
+        <li class="flex items-center gap-2"><i class="fas fa-globe text-blue-600"></i> 도메인 1개 연결 가능</li>
+        <li class="flex items-center gap-2"><i class="fas fa-palette text-blue-600"></i> 템플릿 기본 제공</li>
+        <li class="flex items-center gap-2"><i class="fas fa-shield-alt text-blue-600"></i> 보안 및 캐시 최적화 포함</li>
+        <li class="flex items-center gap-2"><i class="fas fa-shield-halved text-blue-600"></i> DDoS 고급 보호</li>
+        <!-- 빈 항목으로 높이 맞춤 -->
+        <li class="invisible h-5"></li>
+  
+    @elseif ($plan->name === 'pro')
+        <li class="flex items-center gap-2"><i class="fas fa-hdd text-purple-600"></i> 20GB SSD 저장공간</li>
+        <li class="flex items-center gap-2"><i class="fas fa-infinity text-purple-600"></i> 무제한 트래픽</li>
+        <li class="flex items-center gap-2"><i class="fab fa-wordpress text-purple-600"></i> WordPress 자동설치</li>
+        <li class="flex items-center gap-2"><i class="fas fa-database text-purple-600"></i> DB 3개 생성 가능</li>
+        <li class="flex items-center gap-2"><i class="fas fa-globe text-purple-600"></i> 도메인 3개 연결 가능</li>
+        <li class="flex items-center gap-2"><i class="fas fa-star text-purple-600"></i> 프리미엄 템플릿 전체 제공</li>
+        <li class="flex items-center gap-2"><i class="fas fa-rocket text-purple-600"></i> 고속 캐시 및 성능 최적화</li>
+        <li class="flex items-center gap-2"><i class="fas fa-shield-alt text-purple-600"></i> 강화된 보안 및 캐시</li>
+        <li class="flex items-center gap-2"><i class="fas fa-shield-halved text-purple-600"></i> DDoS 고급 보호</li>
+    @endif
+</ul>
 
-                            <li class="flex items-center gap-2"><i class="fas fa-shield-halved text-purple-600"></i> DDoS 고급 보호</li>
-<li class="flex items-center gap-2"><i class="fas fa-rocket text-purple-600"></i> 고속 캐시 및 성능 최적화</li>
-<li class="flex items-center gap-2"><i class="fas fa-cloud-upload-alt text-purple-600"></i> 주 1회 자동 백업</li>
-<li class="flex items-center gap-2"><i class="fas fa-wrench text-purple-600"></i> SFTP 지원</li>
-<li class="flex items-center gap-2"><i class="fas fa-robot text-purple-600"></i> AI 이상 트래픽 탐지</li>
-                        @endif
-                    </ul>
                 </div>
             </label>
         @endforeach
